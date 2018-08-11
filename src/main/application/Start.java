@@ -11,6 +11,7 @@ public class Start {
 		testFrame.registerObserver(controller);
 		testFrame.setVisible(true);			
 		controller.addListener(testFrame);		
+		System.out.println("now we work");
 	}
 
 }
