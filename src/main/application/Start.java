@@ -10,7 +10,8 @@ public class Start {
 		TestFrame testFrame = new TestFrame(controller);
 		testFrame.registerObserver(controller);
 		testFrame.setVisible(true);			
-		controller.addListener(testFrame);		
+		controller.addListener(testFrame);
+		System.out.println("ll");
 		
 	}
 
