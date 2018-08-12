@@ -45,8 +45,8 @@ public class TestFrame extends JFrame implements Listener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		resourceOverview.setModel(new CustomTableModel(controller.getResources(), controller.getResourceColumnNames()));
 		resourceOverview.setRowSelectionInterval(0, 0);
-	
-
+		producerOverview.setModel(new CustomTableModel(controller.getManufacturer(), controller.getManufacturerColumnNames()));
+		producerOverview.setRowSelectionInterval(0, 0);
 		setDisplayImage(controller.getTiles());
 		addButtons();
 		
@@ -82,7 +82,7 @@ public class TestFrame extends JFrame implements Listener {
             @Override
             public void mouseClicked(MouseEvent e) {            	            
                  String valueInCell = (String) resourceOverview.getValueAt(resourceOverview.getSelectedRow(), 0);
-            	 updateAllObservers("Clicked|"+(e.getY()/20)+"|"+(e.getX()/20)+"|"+valueInCell);
+            	 updateAllObservers("Clicked|"+(e.getY()/25)+"|"+(e.getX()/25)+"|"+valueInCell);
             }
         });
 		add(scrollPane);		
@@ -94,7 +94,7 @@ public class TestFrame extends JFrame implements Listener {
 	}
 	
 	public void setDisplayImage(Tile[][] value) {
-		displayedImage = new BufferedImage(value[0].length*20, value.length*20, BufferedImage.TYPE_3BYTE_BGR);
+		displayedImage = new BufferedImage(value[0].length*25, value.length*25, BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D g = (Graphics2D) displayedImage.getGraphics();
 		for (int y = 0; y<value.length;y++){
         	for (int x = 0; x < value[0].length;x++){        		
@@ -111,9 +111,9 @@ public class TestFrame extends JFrame implements Listener {
         		default : 
         		g.setColor(Color.CYAN);        		
         		}
-        		g.fillRect(x*20, y*20, 20, 20);        		       		
+        		g.fillRect(x*25, y*25, 25, 25);        		       		
     	        g.setColor(Color.BLACK);
-    	        g.drawString(""+value[y][x].getAboveGroundResource().getShortDescription(), 5+x*20, y*20+13);	        		
+    	        g.drawString(""+value[y][x].getAboveGroundResource().getShortDescription(), 5+x*25, y*25+13);	        		
         	}
         }
         g.dispose();

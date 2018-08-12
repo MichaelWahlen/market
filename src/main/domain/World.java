@@ -6,18 +6,17 @@ import main.map.Tile;
 public class World {
 	
 	private Tile[][] tiles;
-	private StockPile hub;
+	private StockPile stockPile;
 	private ResourceFactory resourceFactory = ResourceFactory.getInstance();
-
+	private ManufacturerFactory manufacturerFactory = ManufacturerFactory.getInstance();
 	
-	public World() {
-			
+	public World() {			
 		createTile();
 		createHub();
 	}	
 	
 	private void createHub() {
-		hub = new StockPile(resourceFactory.getResourceKeys());		
+		stockPile = new StockPile(resourceFactory.getResourceKeys());		
 	}
 
 	public void switchTile(int x, int y, String string) {
@@ -25,7 +24,7 @@ public class World {
 	}
 	
 	private void createTile() {
-		MapCreation mp = new MapCreation(4,3);
+		MapCreation mp = new MapCreation(10,12);
 		tiles = mp.getTileLevel();
 	}
 	
@@ -34,10 +33,10 @@ public class World {
 			for(int j =0;j<tiles[0].length;j++) {
 				GenerateableResource tileResource = tiles[i][j].getAboveGroundResource();
 				if(!tileResource.isCompoundResource()) {
-					hub.addToStock(tileResource.getName(), tileResource.getDefaultGenerationRate());
+					stockPile.stockImport(tileResource.getName(), tileResource.getDefaultGenerationRate());
 				} else {
-					if(hub.takeFromStock(tileResource.getRequiredResources())) {
-						hub.addToStock(tileResource.getName(), tileResource.getDefaultGenerationRate());
+					if(stockPile.takeFromStock(tileResource.getRequiredResources())) {
+						stockPile.stockImport(tileResource.getName(), tileResource.getDefaultGenerationRate());
 					}
 				}				
 			}
@@ -59,11 +58,19 @@ public class World {
 	}
 
 	public List<String> getStockNames() {		
-		return hub.getFieldNames(); 
+		return stockPile.getFieldNames(); 
 	}
 
 	public Object[][] getStock() {
-		return hub.stockToObjects();
+		return stockPile.stockToObjects();
+	}
+
+	public Object[][] getManufacturer() {		
+		return manufacturerFactory.getManufacturersToObjects();
+	}
+
+	public List<String> getManufacturerColumnNames() {
+		return ManufacturerFactory.getFieldNames();
 	}
 	
 }

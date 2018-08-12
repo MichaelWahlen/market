@@ -20,7 +20,7 @@ public class StockPile {
 		return stock;
 	}
 
-	public synchronized void addToStock(String key, int amount) {
+	public synchronized void stockImport(String key, int amount) {
 		stock.put(key, stock.get(key)+amount);
 	}
 	
@@ -55,6 +55,19 @@ public class StockPile {
 	
 	public List<String> getFieldNames(){
 		return Arrays.asList("name","stock"); 
+	}
+
+	public Integer stockExport(String key, Integer amount) {
+		Integer availableStock = stock.get(key);
+		Integer returnValue = 0;
+		if(availableStock>=amount) {
+			stock.put(key,availableStock-amount);
+			returnValue =  amount;
+		} else {
+			stock.put(key,0);
+			returnValue = availableStock;
+		}
+		return returnValue;
 	}
 	
 }

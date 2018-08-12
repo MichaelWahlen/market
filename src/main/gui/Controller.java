@@ -72,5 +72,14 @@ public class Controller implements Observer {
 		return world.getStockNames();
 	}
 
+	public Object[][] getManufacturer() {
+		return world.getManufacturer();
+	}
+
+	public List<String> getManufacturerColumnNames() {
+		
+		return world.getManufacturerColumnNames();
+	}
+
 
 }
