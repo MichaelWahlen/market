@@ -13,7 +13,7 @@ import main.utilities.StringUtilities;
 public class ManufacturerFactory {
 	
 	private static ManufacturerFactory instance = null;
-	private Map<String, Manufacturer> manufacturers = new HashMap<String, Manufacturer>();
+	private Map<String, Manufacturer> types = new HashMap<String, Manufacturer>();
 		   
 	private ManufacturerFactory(ResourceFactory resourceFactory) {	
 		loadManufacturers(resourceFactory);
@@ -27,12 +27,12 @@ public class ManufacturerFactory {
 	}
 	   
 	public Manufacturer getResource(String key){		  	   
-		return manufacturers.get(key);
+		return types.get(key);
 	}
 	
 	public List<String> getManufacturerKeys(){
 		List<String> returnList = new ArrayList<String>();
-		returnList.addAll(manufacturers.keySet());
+		returnList.addAll(types.keySet());
 		return returnList;
 	}
 	
@@ -44,20 +44,20 @@ public class ManufacturerFactory {
 			manufacturer.setName(moreString.get(0));
 			List<String> evenMoreString = StringUtilities.decomposeValueSeperatedString(moreString.get(1), ';');
 			for(String stringie:evenMoreString) {
-				manufacturer.addManufacturedResource(resourceFactory.getResource(stringie));
+				manufacturer.addManufacturedResource(resourceFactory.getType(stringie));
 			}			
-			this.manufacturers.put(manufacturer.getName(), manufacturer);
+			this.types.put(manufacturer.getName(), manufacturer);
 		}
 	}
 	
-	public static List<String> getFieldNames() {
+	public static List<String> getColumns() {
 		return Arrays.asList("name"); 
 	}
 	
-	public Object[][] getManufacturersToObjects(){	
-		Object[][] productsToObjects = new Object[manufacturers.size()][1];
+	public Object[][] getObjectRepresentation(){	
+		Object[][] productsToObjects = new Object[types.size()][1];
 		int i = 0;
-		for(Manufacturer product:manufacturers.values()) {
+		for(Manufacturer product:types.values()) {
 			productsToObjects[i][0] = product.getName();
 			i++;			
 		}

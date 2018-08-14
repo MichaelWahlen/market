@@ -2,8 +2,8 @@ package main.gui;
 import java.util.*;
 
 import main.controller.ExecutionLoop;
+import main.domain.Node;
 import main.domain.World;
-import main.map.Tile;
 import main.utilities.StringUtilities;
 
 public class Controller implements Observer {
@@ -46,8 +46,8 @@ public class Controller implements Observer {
 		engine.pauze();
 	}
 	
-	public Tile[][] getTiles(){
-		return world.getTiles();
+	public Node[][] getTiles(){
+		return world.getNodes();
 	}
 
 	@Override
@@ -76,10 +76,15 @@ public class Controller implements Observer {
 		return world.getManufacturer();
 	}
 
-	public List<String> getManufacturerColumnNames() {
-		
+	public List<String> getManufacturerColumnNames() {		
 		return world.getManufacturerColumnNames();
 	}
 
+	public Object[][] getTransportTypes() {
+		return world.getTransportTypes();
+	}
 
+	public List<String> getTransportColumns() {		
+		return world.getTransportColumns();
+	}
 }

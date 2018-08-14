@@ -27,7 +27,7 @@ public class ResourceFactory {
 		return instance;
 	}
 	   
-	public GenerateableResource getResource(String key){		  	   
+	public GenerateableResource getType(String key){		  	   
 		return resources.get(key);
 	}
 	
@@ -53,11 +53,11 @@ public class ResourceFactory {
 		}
 	}
 	
-	public static List<String> getFieldNames() {
+	public static List<String> getColumns() {
 		return Arrays.asList("name","defaultGenerationRate","shortDescription","isCompound","demand","demandAmount"); 
 	}
 	
-	public Object[][] getResourcesToObjects(){	
+	public Object[][] getObjectRepresentation(){	
 		Object[][] productsToObjects = new Object[resources.size()*3][6];
 		int i = 0;
 		for(GenerateableResource product:resources.values()) {

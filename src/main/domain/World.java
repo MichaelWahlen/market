@@ -1,14 +1,16 @@
 package main.domain;
 import java.util.List;
 import main.map.MapCreation;
-import main.map.Tile;
+
 
 public class World {
 	
-	private Tile[][] tiles;
+	private Web web;
+	private Node[][] nodes;
 	private StockPile stockPile;
 	private ResourceFactory resourceFactory = ResourceFactory.getInstance();
 	private ManufacturerFactory manufacturerFactory = ManufacturerFactory.getInstance();
+	private TransportTypeFactory transportTypeFactory = TransportTypeFactory.getInstance();
 	
 	public World() {			
 		createTile();
@@ -20,18 +22,23 @@ public class World {
 	}
 
 	public void switchTile(int x, int y, String string) {
-		tiles[x][y].setAboveGroundResource(resourceFactory.getResource(string));
+		if(resourceFactory.getType(string)!=null) {
+			nodes[x][y].setAboveGroundResource(resourceFactory.getType(string));
+		} else {
+			web.setTransportType(x,y,string);			
+		}
 	}
 	
 	private void createTile() {
 		MapCreation mp = new MapCreation(10,12);
-		tiles = mp.getTileLevel();
+		web = new Web(mp.getNodes());		
+		nodes = web.getNodes();
 	}
 	
 	public void simulateTick() {
-		for(int i = 0; i<tiles.length;i++){
-			for(int j =0;j<tiles[0].length;j++) {
-				GenerateableResource tileResource = tiles[i][j].getAboveGroundResource();
+		for(int i = 0; i<nodes.length;i++){
+			for(int j =0;j<nodes[0].length;j++) {
+				GenerateableResource tileResource = nodes[i][j].getAboveGroundResource();
 				if(!tileResource.isCompoundResource()) {
 					stockPile.stockImport(tileResource.getName(), tileResource.getDefaultGenerationRate());
 				} else {
@@ -44,17 +51,12 @@ public class World {
 	}
 	
 	public List<String> getResourceFields() {
-		return ResourceFactory.getFieldNames();
+		return ResourceFactory.getColumns();
 	}
 
 
 	public Object[][] getResourceContents() {		
-		return resourceFactory.getResourcesToObjects();
-	}
-	
-
-	public Tile[][] getTiles(){
-		return tiles;
+		return resourceFactory.getObjectRepresentation();
 	}
 
 	public List<String> getStockNames() {		
@@ -66,11 +68,23 @@ public class World {
 	}
 
 	public Object[][] getManufacturer() {		
-		return manufacturerFactory.getManufacturersToObjects();
+		return manufacturerFactory.getObjectRepresentation();
 	}
 
 	public List<String> getManufacturerColumnNames() {
-		return ManufacturerFactory.getFieldNames();
+		return ManufacturerFactory.getColumns();
+	}
+	
+	public Object[][] getTransportTypes() {		
+		return transportTypeFactory.getObjectRepresentation();
+	}
+
+	public List<String> getTransportColumns() {
+		return TransportTypeFactory.getColumns();
+	}
+	
+	public Node[][] getNodes() {
+		return web.getNodes();
 	}
 	
 }
