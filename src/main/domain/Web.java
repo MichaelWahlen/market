@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import main.domain.data.TransportFactory;
+
 
 public class Web {
 	
@@ -13,7 +15,7 @@ public class Web {
 	private Map<Integer,List<Node>> topLevelNetworks = new HashMap<Integer, List<Node>>();
 	private Map<Integer,List<Node>> detailNetworks = new HashMap<Integer, List<Node>>();
 	private int lastAssignedKey = 0;
-	private TransportTypeFactory transportTypeFactory = TransportTypeFactory.getInstance();
+	private TransportFactory transportTypeFactory = TransportFactory.getInstance();
 	
 	
 	public Web(Node[][] nodes) {
@@ -64,8 +66,7 @@ public class Web {
 			Node south = nodes[Math.min(maX, x+1)][y];
 			Node east = nodes[x][Math.min(maY, y+1)];
 			Node north = nodes[Math.max(0, x-1)][y]; 
-			Node west = nodes[x][Math.max(0, y-1)];
-			
+			Node west = nodes[x][Math.max(0, y-1)];			
 			
 			if(north.getTransportType().getName().equals(string)&&!north.getTransportType().getName().equals("Nothing")) {
 				topSet.put(north.getTopNetworkKey(),north.getTopNetworkKey());
@@ -136,12 +137,8 @@ public class Web {
 						topLevelNetworks.remove(twelf);
 						detailNetworks.remove(twelf);
 					}
-				}
-				
-				
-			}
-			
-			
+				}				
+			}			
 			
 			selectedNode.setTransportType(transportTypeFactory.getType(string));
 		}

@@ -1,6 +1,6 @@
-Name|Produces
-CornFarm|Corn
-Forestry|Wood
-LiveStock|Cow;Waste
-FurnitureMaker|Furniture
-Bakery|Food
+Code|Name|Produces
+1|CornFarm|Corn
+2|Forestry|Wood
+3|LiveStock|Cow;Waste
+4|FurnitureMaker|Furniture
+5|Bakery|Food

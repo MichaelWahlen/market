@@ -1,4 +1,4 @@
-package main.domain;
+package main.domain.data;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,9 +40,10 @@ public class ManufacturerFactory {
 		List<String> manufacturerstring = ParserCSV.parseToStrings(new File("src/resources/Manufacturer.csv"));
 		for(String string:manufacturerstring) {			
 			List<String> moreString = StringUtilities.decomposeValueSeperatedString(string, '|');
-			Manufacturer manufacturer = new Manufacturer(resourceFactory.getResourceKeys());			
-			manufacturer.setName(moreString.get(0));
-			List<String> evenMoreString = StringUtilities.decomposeValueSeperatedString(moreString.get(1), ';');
+			Manufacturer manufacturer = new Manufacturer(resourceFactory.getResourceKeys());
+			manufacturer.setCode(Integer.parseInt(moreString.get(0)));
+			manufacturer.setName(moreString.get(1));
+			List<String> evenMoreString = StringUtilities.decomposeValueSeperatedString(moreString.get(2), ';');
 			for(String stringie:evenMoreString) {
 				manufacturer.addManufacturedResource(resourceFactory.getType(stringie));
 			}			
@@ -51,14 +52,15 @@ public class ManufacturerFactory {
 	}
 	
 	public static List<String> getColumns() {
-		return Arrays.asList("name"); 
+		return Arrays.asList("code","name"); 
 	}
 	
 	public Object[][] getObjectRepresentation(){	
-		Object[][] productsToObjects = new Object[types.size()][1];
+		Object[][] productsToObjects = new Object[types.size()][2];
 		int i = 0;
 		for(Manufacturer product:types.values()) {
-			productsToObjects[i][0] = product.getName();
+			productsToObjects[i][0] = product.getCode();
+			productsToObjects[i][1] = product.getName();
 			i++;			
 		}
 		return productsToObjects;

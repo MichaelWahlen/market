@@ -7,5 +7,6 @@ public interface GenerateableResource {
 	public int getDefaultGenerationRate();	
 	public String getShortDescription();	
 	public Map<String, Integer> getRequiredResources();
-	public boolean isCompoundResource();	
+	public boolean isCompoundResource();
+	public int getCode();	
 }

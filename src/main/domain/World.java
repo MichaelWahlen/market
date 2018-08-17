@@ -1,6 +1,11 @@
 package main.domain;
 import java.util.List;
-import main.map.MapCreation;
+
+import main.domain.data.ManufacturerFactory;
+import main.domain.data.ResourceFactory;
+import main.domain.data.TileFactory;
+import main.domain.data.TransportFactory;
+import main.domain.map.MapCreation;
 
 
 public class World {
@@ -10,7 +15,8 @@ public class World {
 	private StockPile stockPile;
 	private ResourceFactory resourceFactory = ResourceFactory.getInstance();
 	private ManufacturerFactory manufacturerFactory = ManufacturerFactory.getInstance();
-	private TransportTypeFactory transportTypeFactory = TransportTypeFactory.getInstance();
+	private TransportFactory transportTypeFactory = TransportFactory.getInstance();
+	private TileFactory tileFactory = TileFactory.getInstance();
 	
 	public World() {			
 		createTile();
@@ -21,7 +27,7 @@ public class World {
 		stockPile = new StockPile(resourceFactory.getResourceKeys());		
 	}
 
-	public void switchTile(int x, int y, String string) {
+	public void switchTile(int x, int y, String string, int i, int j) {
 		if(resourceFactory.getType(string)!=null) {
 			nodes[x][y].setAboveGroundResource(resourceFactory.getType(string));
 		} else {
@@ -29,10 +35,9 @@ public class World {
 		}
 	}
 	
-	private void createTile() {
-		MapCreation mp = new MapCreation(10,12);
-		web = new Web(mp.getNodes());		
-		nodes = web.getNodes();
+	private void createTile() {		
+		nodes = MapCreation.createSurface(10, 13);
+		web = new Web(nodes);		
 	}
 	
 	public void simulateTick() {
@@ -50,41 +55,51 @@ public class World {
 		}			
 	}
 	
-	public List<String> getResourceFields() {
+	public Node[][] getNodes() {
+		return web.getNodes();
+	}
+	
+	public List<String> getResourceColumns() {
 		return ResourceFactory.getColumns();
 	}
 
 
-	public Object[][] getResourceContents() {		
+	public Object[][] getResources() {		
 		return resourceFactory.getObjectRepresentation();
 	}
 
-	public List<String> getStockNames() {		
+	public List<String> getStockColumns() {		
 		return stockPile.getFieldNames(); 
 	}
 
-	public Object[][] getStock() {
+	public Object[][] getStocks() {
 		return stockPile.stockToObjects();
 	}
-
-	public Object[][] getManufacturer() {		
+	
+	public List<String> getManufactoryColumns() {
+		return ManufacturerFactory.getColumns();
+	}
+	
+	public Object[][] getManufacturers() {		
 		return manufacturerFactory.getObjectRepresentation();
 	}
 
-	public List<String> getManufacturerColumnNames() {
-		return ManufacturerFactory.getColumns();
+	public List<String> getTransportColumns() {
+		return TransportFactory.getColumns();
 	}
 	
 	public Object[][] getTransportTypes() {		
 		return transportTypeFactory.getObjectRepresentation();
 	}
 
-	public List<String> getTransportColumns() {
-		return TransportTypeFactory.getColumns();
+	public List<String> getTileColumns() {
+		return TileFactory.getColumns();
 	}
 	
-	public Node[][] getNodes() {
-		return web.getNodes();
+	public Object[][] getTiles() {		
+		return tileFactory.getObjectRepresentation();
 	}
+	
+
 	
 }

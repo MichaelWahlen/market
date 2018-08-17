@@ -1,15 +1,20 @@
-package main.domain;
+package main.domain.data;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import main.domain.GenerateableResource;
+import main.domain.Producer;
+import main.domain.StockPile;
+
 public class Manufacturer implements Producer {
 
 	private StockPile localStockPile;
 	private List<GenerateableResource> manufacturedResources = new ArrayList<GenerateableResource>();
 	private String name;
+	private int code;
 	
 	public Manufacturer(Map<String, Integer> startStockPile) {
 		localStockPile = new StockPile(new ArrayList<String>(startStockPile.keySet()));
@@ -56,5 +61,13 @@ public class Manufacturer implements Producer {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
 	}
 }

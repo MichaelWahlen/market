@@ -1,7 +1,7 @@
-Name|DefaultGenerationRate|ShortDescription|CompoundResource|Demand
-Corn|1|CR|false|
-Wood|2|WO|false|
-Cow|5|CO|false|
-Food|1|FD|true|Corn:1;Cow:2
-Furniture|1|FR|true|Wood:10
-Waste|1|WT|false|
+Code|Name|DefaultGenerationRate|ShortDescription|CompoundResource|Demand
+1|Corn|1|CR|false|
+2|Wood|2|WO|false|
+3|Cow|5|CO|false|
+4|Food|1|FD|true|Corn:1;Cow:2
+5|Furniture|1|FR|true|Wood:10
+6|Waste|1|WT|false|

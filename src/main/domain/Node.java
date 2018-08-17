@@ -1,11 +1,15 @@
 package main.domain;
 
+import main.domain.data.Tile;
+import main.domain.data.Transport;
+
 public class Node {
 	
 	private int detailNetworkKey = 0;
 	private int topNetworkKey = 0;
 	private GenerateableResource aboveGroundResource;
-	private TransportType transportType =new TransportType();
+	private Transport transportType =new Transport();
+	private Tile tile;
 	
 	public int getDetailNetworkKey() {
 		return detailNetworkKey;
@@ -31,12 +35,24 @@ public class Node {
 		this.aboveGroundResource = generateableResource;
 	}
 
-	public TransportType getTransportType() {
+	public Transport getTransportType() {
 		return transportType;
 	}
 
-	public void setTransportType(TransportType transportType) {
+	public void setTransportType(Transport transportType) {
 		this.transportType = transportType;
+	}
+
+	public Tile getTile() {
+		return tile;
+	}
+
+	public void setTile(Tile tile) {
+		this.tile = tile;
+	}
+	
+	public int getTileCode() {
+		return tile.getCode();
 	}
 	
 }

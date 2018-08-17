@@ -34,19 +34,11 @@ public class Controller implements Observer {
 		}		
 	}
 	
-	public Object[][] getResources(){
-		return world.getResourceContents(); 
-	}
-	
-	public List<String> getResourceColumnNames(){
-		return world.getResourceFields();
-	}
-	
 	public void pauze() {
 		engine.pauze();
 	}
 	
-	public Node[][] getTiles(){
+	public Node[][] getNodes(){
 		return world.getNodes();
 	}
 
@@ -56,35 +48,53 @@ public class Controller implements Observer {
 			pauze();
 		} else {
 			List<String> input = StringUtilities.decomposeValueSeperatedString(update, '|');
-			if(input.get(0).equals("Clicked")) {
-				world.switchTile(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),input.get(3));
+			if(input.get(0).equals("Clicked")) {				
+				world.switchTile(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),input.get(3),Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)));
 				updateListeners("Click");
 			}
 			
 		}
 	}
-
-	public Object[][] getStock() {
-		return world.getStock();
+	
+	public List<String> getResourceColumns(){
+		return world.getResourceColumns();
+	}
+	
+	public Object[][] getResources(){
+		return world.getResources(); 
 	}
 
-	public List<String> getStockNames() {		
-		return world.getStockNames();
+	public List<String> getStockColumns() {		
+		return world.getStockColumns();
+	}
+	
+	public Object[][] getStocks() {
+		return world.getStocks();
 	}
 
+	public List<String> getManufactorerColumns() {		
+		return world.getManufactoryColumns();
+	}
+	
 	public Object[][] getManufacturer() {
-		return world.getManufacturer();
+		return world.getManufacturers();
 	}
-
-	public List<String> getManufacturerColumnNames() {		
-		return world.getManufacturerColumnNames();
-	}
-
-	public Object[][] getTransportTypes() {
-		return world.getTransportTypes();
-	}
-
+	
 	public List<String> getTransportColumns() {		
 		return world.getTransportColumns();
 	}
+	
+	public Object[][] getTransportTypes() {
+		return world.getTransportTypes();
+	}
+	
+	public List<String> getTileColumns() {		
+		return world.getTileColumns();
+	}
+	
+	public Object[][] getTiles() {
+		return world.getTiles();
+	}
+
+
 }
