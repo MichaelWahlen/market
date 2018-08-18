@@ -87,7 +87,7 @@ public class TestFrame extends JFrame implements Listener {
                 }  else if (noneButton.isSelected()) {
                 	valueInCell = "Information";
                 }	else {
-                	valueInCell = (String) transportOverview.getValueAt(transportOverview.getSelectedRow(), 1);                	
+                	valueInCell = ""+(int) transportOverview.getValueAt(transportOverview.getSelectedRow(), 0);                	
                 }                
             	updateAllObservers("Clicked|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell+"|"+(release.getY()/50)+"|"+(release.getX()/50));
 			}			

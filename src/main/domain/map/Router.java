@@ -25,7 +25,7 @@ public class Router {
 		maxY = nodes[0].length - 1;		
 	}
 	
-	public List<Node> getRoute(int fromX, int fromY, int toX, int toY, boolean forTransport){
+	public List<Node> getRoute(int fromX, int fromY, int toX, int toY, String forTransport, int detailNetwork){
 		if(fromX==toX&&fromY==toY) {
 			List<Node> nodes = new ArrayList<Node>();
 			nodes.add(this.nodes[fromX][fromY]);
@@ -114,7 +114,7 @@ public class Router {
 	private Node getOpenNode(int toX, int toY, int travelledDistance) {		
 		Node nodeToAdd = nodes[toX][toY];
 		int travelWeightCurrentNode = nodeToAdd.getWeight();
-		if(nodeToAdd.isPassable() && nodeToAdd.getTravelledDistance()>travelledDistance + travelWeightCurrentNode) {
+		if(nodeToAdd.isPassable() && nodeToAdd.getTransportType().getCode()==99&&nodeToAdd.getTravelledDistance()>travelledDistance + travelWeightCurrentNode) {
 			nodeToAdd.setTravelledDistance(travelledDistance + travelWeightCurrentNode);
 			return nodeToAdd;
 		}

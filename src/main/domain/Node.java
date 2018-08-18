@@ -11,7 +11,7 @@ public class Node {
 	private int detailNetworkKey = 0;
 	private int topNetworkKey = 0;
 	private GenerateableResource aboveGroundResource;
-	private Transport transportType =new Transport();
+	private Transport transportType;
 	private Tile tile;
 	private Node parentNode;	
 	private int x;

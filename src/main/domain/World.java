@@ -34,8 +34,9 @@ public class World {
 		if(resourceFactory.getType(string)!=null) {
 			nodes[fromX][fromY].setAboveGroundResource(resourceFactory.getType(string));
 		} else if(nodes[toX][toY].isPassable() && nodes[fromX][fromY].isPassable()) {
-			for(Node node:router.getRoute(fromX,fromY,toX,toY,true)) {
-				web.setTransportType(node.getX(),node.getY(),string);			
+			List<Node> nodes  = router.getRoute(fromX,fromY,toX,toY,string,0);			
+			if(nodes!=null) {
+				web.setTransportType(nodes, Integer.parseInt(string));
 			}
 		}
 		
@@ -62,7 +63,7 @@ public class World {
 	}
 	
 	public Node[][] getNodes() {
-		return web.getNodes();
+		return nodes;
 	}
 	
 	public List<String> getResourceColumns() {

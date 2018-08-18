@@ -2,9 +2,10 @@ package main.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import main.domain.data.TransportFactory;
 
@@ -16,7 +17,8 @@ public class Web {
 	private Map<Integer,List<Node>> detailNetworks = new HashMap<Integer, List<Node>>();
 	private int lastAssignedKey = 0;
 	private TransportFactory transportTypeFactory = TransportFactory.getInstance();
-	
+	private int maxX;
+	private int maxY;
 	
 	public Web(Node[][] nodes) {
 		this.nodes = nodes;
@@ -31,118 +33,127 @@ public class Web {
         		if(assignedDetail>lastAssignedKey) {
         			lastAssignedKey = assignedDetail;
         		}
-        		List<Node> topLevelNodes =topLevelNetworks.get(assignedTop);
+        		List<Node> topLevelNodes = topLevelNetworks.get(assignedTop);
         		if(topLevelNodes == null) {
         			topLevelNodes = new ArrayList<Node>();        			
         		}
         		topLevelNodes.add(selectedNode);
-        		List<Node> detailLevelNodes =detailNetworks.get(assignedDetail);
+        		List<Node> detailLevelNodes = detailNetworks.get(assignedDetail);
         		if(detailLevelNodes == null) {
         			detailLevelNodes = new ArrayList<Node>();        			
         		}
         		detailLevelNodes.add(selectedNode);        		
         	}
 		}
+		maxX = nodes.length - 1;
+		maxY = nodes[0].length - 1;
+	}
+
+	private void conditionallyAddNode(Set<Integer> detailSet, Set<Integer> topSet, int currentX, int currentY, int string) {
+		Node abc = this.nodes[currentX][currentY];
+		if(abc.getTransportType().getCode()==string) {
+			detailSet.add(abc.getDetailNetworkKey());
+			topSet.add(abc.getTopNetworkKey());
+		}		
 	}
 	
-	public Node[][] getNodes() {
-		return nodes;
-	}
-
-	public void setNodes(Node[][] nodes) {
-		this.nodes = nodes;
-	}
-
-	public void setTransportType(int x, int y, String string) {
-		Node selectedNode = nodes[x][y];
-		int maX = nodes.length - 1;
-		int maY = nodes[0].length - 1;
-		Map<Integer,Integer> topSet = new HashMap<Integer,Integer>();		
-		Map<Integer,Integer> detailSet = new HashMap<Integer,Integer>();
-		if(selectedNode.getTransportType().getName().equals(string)) {
-			
-		} else if(selectedNode.getTransportType().getName().equals("Nothing")) {
-			
-			Node south = nodes[Math.min(maX, x+1)][y];
-			Node east = nodes[x][Math.min(maY, y+1)];
-			Node north = nodes[Math.max(0, x-1)][y]; 
-			Node west = nodes[x][Math.max(0, y-1)];			
-			
-			if(north.getTransportType().getName().equals(string)&&!north.getTransportType().getName().equals("Nothing")) {
-				topSet.put(north.getTopNetworkKey(),north.getTopNetworkKey());
-				detailSet.put(north.getTopNetworkKey(),north.getTopNetworkKey());
+	public void setTransportType(List<Node> nodes, int transportTypeKey) {		
+		Set<Integer> detailSet = new HashSet<Integer>();
+		Set<Integer> topSet = new HashSet<Integer>();
+		for(Node node:nodes) {
+			int currentX = node.getX();
+			int currentY = node.getY();
+			Node abc = this.nodes[currentX][currentY];
+			detailSet.add(abc.getDetailNetworkKey());
+			topSet.add(abc.getTopNetworkKey());
+			if(currentX<maxX) {
+				conditionallyAddNode(detailSet,topSet,currentX+1,currentY,transportTypeKey);				
 			}
-			if(east.getTransportType().getName().equals(string)&&!east.getTransportType().getName().equals("Nothing")) {
-				topSet.put(east.getTopNetworkKey(),east.getTopNetworkKey());
-				detailSet.put(east.getTopNetworkKey(),east.getTopNetworkKey());
+			if(currentX>0) {
+				conditionallyAddNode(detailSet,topSet,currentX-1,currentY,transportTypeKey);	
 			}
-			if(south.getTransportType().getName().equals(string)&&!south.getTransportType().getName().equals("Nothing")) {
-				topSet.put(south.getTopNetworkKey(),south.getTopNetworkKey());
-				detailSet.put(south.getTopNetworkKey(),south.getTopNetworkKey());
+			if(currentY<maxY) {
+				conditionallyAddNode(detailSet,topSet,currentX,currentY+1,transportTypeKey);	
 			}
-			if(west.getTransportType().getName().equals(string)&&!west.getTransportType().getName().equals("Nothing")) {
-				topSet.put(west.getTopNetworkKey(),west.getTopNetworkKey());
-				detailSet.put(west.getTopNetworkKey(),west.getTopNetworkKey());
+			if(currentY>0) {
+				conditionallyAddNode(detailSet,topSet,currentX,currentY-1,transportTypeKey);	
 			}
-			
-			if(topSet.size()==0) {				
-				lastAssignedKey++;
-				selectedNode.setDetailNetworkKey(lastAssignedKey);
-				selectedNode.setTopNetworkKey(lastAssignedKey);
-				List<Node> detailNode = new ArrayList<Node>();
-				List<Node> topNode = new ArrayList<Node>();
-				detailNode.add(selectedNode);
-				topNode.add(selectedNode);
-				detailNetworks.put(lastAssignedKey, detailNode);
-				topLevelNetworks.put(lastAssignedKey,topNode);
-			} else if(topSet.size()==1){
-				int chosen = 0;
-				for(Integer integ:topSet.keySet()) {
-					chosen = integ;
-				}
-				selectedNode.setDetailNetworkKey(chosen);
-				selectedNode.setTopNetworkKey(chosen);
-				List<Node> detailNode = detailNetworks.get(chosen);
-				List<Node> topNode = topLevelNetworks.get(chosen);
-				detailNode.add(selectedNode);
-				topNode.add(selectedNode);				
-			} else if(topSet.size()>1) {
-				int chosen = 0;
-				int maxOfNodes = 0;
-				int currentNrOfNodes = 0;
-				for(Integer integ:topSet.keySet()) {
-					currentNrOfNodes = topLevelNetworks.get(integ).size();
-					if(currentNrOfNodes>maxOfNodes) {
-						maxOfNodes=currentNrOfNodes;
-						chosen = integ;
-					}					
-				}
-				selectedNode.setDetailNetworkKey(chosen);
-				selectedNode.setTopNetworkKey(chosen);
-				List<Node> detailNode = detailNetworks.get(chosen);
-				List<Node> topNode = topLevelNetworks.get(chosen);
-				detailNode.add(selectedNode);
-				topNode.add(selectedNode);			
-				List<Node> chosenListTop = topLevelNetworks.get(chosen);
-				List<Node> chosenListDetail = detailNetworks.get(chosen);
-				for(Integer twelf:topSet.keySet()) {
-					if(twelf!=chosen) {
-						List<Node> tops = topLevelNetworks.get(twelf);						
-						for(Node node:tops) {
-							node.setTopNetworkKey(chosen);
-							node.setDetailNetworkKey(chosen);
-							chosenListTop.add(node);
-							chosenListDetail.add(node);
-						}
-						topLevelNetworks.remove(twelf);
-						detailNetworks.remove(twelf);
-					}
-				}				
-			}			
-			
-			selectedNode.setTransportType(transportTypeFactory.getType(string));
 		}
+		//----------------------------		
+		if(detailSet.size()==1 && detailSet.contains(0)) {
+			addBasic(nodes,transportTypeKey);
+			return;
+		}	
+		
+		
+		int pickedNetTopNetWork = getLargestKey(topSet,topLevelNetworks);	
+		int pickedDetailNetWork = getLargestKey(detailSet,detailNetworks);
+		//--------------------------------		
+		setNetwork(topSet,topLevelNetworks,true,nodes);		
+		setNetwork(detailSet,detailNetworks,false,nodes);	
+		//--------------------------------
+				
+		List<Node> selection = detailNetworks.get(pickedDetailNetWork);
+		List<Node> selection2 = topLevelNetworks.get(pickedNetTopNetWork);
+		for(Node node: nodes) {		
+			node.setTransportType(transportTypeFactory.getType(transportTypeKey));
+			node.setDetailNetworkKey(pickedDetailNetWork);
+			node.setTopNetworkKey(pickedNetTopNetWork);
+			selection.add(node);
+			selection2.add(node);
+		}	
+		
 	}
+
+	private void addBasic(List<Node> nodes, int transportTypeKey) {
+		lastAssignedKey++;
+		List<Node> detailNode = new ArrayList<Node>();
+		List<Node> topNode = new ArrayList<Node>();
+		for(Node node: nodes) {
+			node.setDetailNetworkKey(lastAssignedKey);
+			node.setTopNetworkKey(lastAssignedKey);
+			detailNode.add(node);
+			topNode.add(node);
+			node.setTransportType(transportTypeFactory.getType(transportTypeKey));
+		}			
+		detailNetworks.put(lastAssignedKey, detailNode);
+		topLevelNetworks.put(lastAssignedKey,topNode);		
+	}
+
+	private void setNetwork(Set<Integer> keys, Map<Integer, List<Node>> networks, boolean isTop, List<Node> nodes) {
+		int chosenKey = getLargestKey(keys,networks);
+		List<Node> selectedNetwork = networks.get(chosenKey);
+		for(Integer integer: keys) {
+			if(integer!=0 && integer!=chosenKey) {
+				List<Node> selection = networks.get(integer);
+				for(Node node:selection) {					
+					if(isTop) {
+						node.setTopNetworkKey(chosenKey);
+					} else {
+						node.setDetailNetworkKey(chosenKey);
+					}
+					selectedNetwork.add(node);								
+				}
+				networks.remove(integer);
+			} 
+		}		
+	}
+
+	private int getLargestKey(Set<Integer> keys, Map<Integer, List<Node>> networks) {
+		int maxSize = 0;
+		int largestKey = 0;
+		for(Integer integer: keys) {
+			if(integer!=0) {
+				int currentSize = networks.get(integer).size();
+				if(currentSize>maxSize) {
+					maxSize = currentSize;
+					largestKey = integer;
+				}
+			}
+		}
+		return largestKey;		
+	}
+
 
 	
 	

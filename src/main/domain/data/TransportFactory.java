@@ -13,7 +13,7 @@ import main.utilities.StringUtilities;
 public class TransportFactory {
 	
 	private static TransportFactory instance = null;
-	private Map<String, Transport> types = new HashMap<String, Transport>();
+	private Map<Integer, Transport> types = new HashMap<Integer, Transport>();
 		   
 	private TransportFactory() {	
 		loadTypes();
@@ -26,12 +26,12 @@ public class TransportFactory {
 		return instance;
 	}
 	   
-	public Transport getType(String key){		  	   
+	public Transport getType(Integer key){		  	   
 		return types.get(key);
 	}
 	
-	public List<String> getKeys(){
-		List<String> returnList = new ArrayList<String>();
+	public List<Integer> getKeys(){
+		List<Integer> returnList = new ArrayList<Integer>();
 		returnList.addAll(types.keySet());
 		return returnList;
 	}
@@ -40,10 +40,10 @@ public class TransportFactory {
 		List<String> manufacturerstring = ParserCSV.parseToStrings(new File("src/resources/Transport.csv"));
 		for(String string:manufacturerstring) {			
 			List<String> moreString = StringUtilities.decomposeValueSeperatedString(string, '|');
-			Transport manufacturer = new Transport();
-			manufacturer.setCode(Integer.parseInt(moreString.get(0)));
-			manufacturer.setName(moreString.get(1));					
-			this.types.put(manufacturer.getName(), manufacturer);
+			Transport type = new Transport();
+			type.setCode(Integer.parseInt(moreString.get(0)));
+			type.setName(moreString.get(1));					
+			this.types.put(type.getCode(), type);
 		}
 	}
 	
