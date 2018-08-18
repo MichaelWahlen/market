@@ -43,22 +43,24 @@ public class TileFactory {
 			Tile tile = new Tile();
 			tile.setCode(Integer.parseInt(moreString.get(0)));
 			tile.setName(moreString.get(1));
-			tile.setWeight(Integer.parseInt(moreString.get(2)));	
+			tile.setWeight(Integer.parseInt(moreString.get(2)));
+			tile.setPassable(Boolean.parseBoolean(moreString.get(3)));
 			this.types.put(tile.getName(), tile);
 		}
 	}
 	
 	public static List<String> getColumns() {
-		return Arrays.asList("code","name","weight"); 
+		return Arrays.asList("code","name","weight","isPassable"); 
 	}
 	
 	public Object[][] getObjectRepresentation(){	
-		Object[][] typeToObjects = new Object[types.size()][3];
+		Object[][] typeToObjects = new Object[types.size()][4];
 		int i = 0;
 		for(Tile product:types.values()) {
 			typeToObjects[i][0] = product.getCode();
 			typeToObjects[i][1] = product.getName();
 			typeToObjects[i][2] = product.getWeight();
+			typeToObjects[i][3] = product.isPassable();
 			i++;			
 		}
 		return typeToObjects;

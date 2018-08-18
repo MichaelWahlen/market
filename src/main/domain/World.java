@@ -6,6 +6,7 @@ import main.domain.data.ResourceFactory;
 import main.domain.data.TileFactory;
 import main.domain.data.TransportFactory;
 import main.domain.map.MapCreation;
+import main.domain.map.Router;
 
 
 public class World {
@@ -17,22 +18,27 @@ public class World {
 	private ManufacturerFactory manufacturerFactory = ManufacturerFactory.getInstance();
 	private TransportFactory transportTypeFactory = TransportFactory.getInstance();
 	private TileFactory tileFactory = TileFactory.getInstance();
+	private Router router;
 	
 	public World() {			
 		createTile();
 		createHub();
+		router = new Router(nodes);
 	}	
 	
 	private void createHub() {
 		stockPile = new StockPile(resourceFactory.getResourceKeys());		
 	}
 
-	public void switchTile(int x, int y, String string, int i, int j) {
+	public void switchTile(int fromX, int fromY, String string, int toX, int toY) {
 		if(resourceFactory.getType(string)!=null) {
-			nodes[x][y].setAboveGroundResource(resourceFactory.getType(string));
-		} else {
-			web.setTransportType(x,y,string);			
+			nodes[fromX][fromY].setAboveGroundResource(resourceFactory.getType(string));
+		} else if(nodes[toX][toY].isPassable() && nodes[fromX][fromY].isPassable()) {
+			for(Node node:router.getRoute(fromX,fromY,toX,toY,true)) {
+				web.setTransportType(node.getX(),node.getY(),string);			
+			}
 		}
+		
 	}
 	
 	private void createTile() {		

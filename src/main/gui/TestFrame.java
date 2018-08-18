@@ -20,13 +20,13 @@ public class TestFrame extends JFrame implements Listener {
 	        super.paintComponent(g);	 
 	        g.drawImage(displayedImage,0,0,null);	                
 	        g.dispose();
-	    } 
-
+	    }
 	} 	
 	
 	private static final long serialVersionUID = 1690046530696444005L;
 	private int width = 2000;
 	private int height = 1040;	
+	private JTextArea textArea = new JTextArea();
 	private JTable resourceOverview= new JTable();
 	private JTable supplyOverview= new JTable();
 	private JTable producerOverview = new JTable();
@@ -35,7 +35,8 @@ public class TestFrame extends JFrame implements Listener {
 	private JPanel optionsPanel = new JPanel(new GridLayout(2,3));
 	private BufferedImage displayedImage = null;
 	private JRadioButton transportButton = new JRadioButton("Transport");
-	private JRadioButton resourceButton = new JRadioButton("Resource");	
+	private JRadioButton resourceButton = new JRadioButton("Resource");
+	private JRadioButton noneButton = new JRadioButton("None");	
 	private List<Observer> observers = new ArrayList<Observer>();
 
 	public TestFrame(Controller controller) {
@@ -45,19 +46,21 @@ public class TestFrame extends JFrame implements Listener {
 		initGraphics();
 		addButtons();
 		initPauze();
+		textArea.setBounds(805,50,200,800);
+		add(textArea);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
 		setDisplayImage(controller.getNodes());		
 	}
 	
 	private void addButtons() {
-		JPanel panel = new JPanel(new GridLayout(2,1));
-        transportButton.setBounds(120, 30, 120, 50);        
-        resourceButton.setBounds(250, 30, 80, 50);
+		JPanel panel = new JPanel(new GridLayout(3,1));        
 	    ButtonGroup bG = new ButtonGroup();
 	    bG.add(transportButton);
 	    bG.add(resourceButton);
+	    bG.add(noneButton);
 	    panel.add(transportButton);
 	    panel.add(resourceButton);
+	    panel.add(noneButton);
 	    transportButton.setSelected(true);
 	    panel.setBounds(0,0,100,50);
 	    this.add(panel);
@@ -65,8 +68,7 @@ public class TestFrame extends JFrame implements Listener {
 
 	private void initGraphics() {		
 		OverviewOfTiles overview = new OverviewOfTiles();		
-		JScrollPane scrollPane = new JScrollPane(overview);
-		
+		JScrollPane scrollPane = new JScrollPane(overview);		
 		overview.addMouseListener(new MouseInputAdapter() {
             
 			Point press;
@@ -82,19 +84,19 @@ public class TestFrame extends JFrame implements Listener {
 			    String valueInCell = "";			    
             	if(resourceButton.isSelected()) { 
                 	valueInCell = (String) resourceOverview.getValueAt(resourceOverview.getSelectedRow(), 1);                	
-                } else {
-                	valueInCell = (String) transportOverview.getValueAt(transportOverview.getSelectedRow(), 1);     
+                }  else if (noneButton.isSelected()) {
+                	valueInCell = "Information";
+                }	else {
+                	valueInCell = (String) transportOverview.getValueAt(transportOverview.getSelectedRow(), 1);                	
                 }                
-			    updateAllObservers("Clicked|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell+"|"+(release.getY()/50)+"|"+(release.getX()/50));
-			}
-			
+            	updateAllObservers("Clicked|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell+"|"+(release.getY()/50)+"|"+(release.getX()/50));
+			}			
 		
         });
 		scrollPane.setBounds(0,50,800,800);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);	
-		add(scrollPane);
-	
+		add(scrollPane);	
 	}
 
 	public void registerObserver(Observer observer) {
@@ -108,13 +110,22 @@ public class TestFrame extends JFrame implements Listener {
         	for (int x = 0; x < value[0].length;x++){        		
         		switch(value[y][x].getTileCode()) {
         		case 1:
-	        		g.setColor(Color.YELLOW);	
+	        		g.setColor(new Color(255, 255, 153));	
 	                break;
         		case 2:
-	        		g.setColor(Color.GREEN);	
+	        		g.setColor(new Color(153, 255, 102));	
 	                break;
         		case 3:
 	        		g.setColor(new Color(0,102,0));	
+	                break;
+        		case 4:
+	        		g.setColor(new Color(153, 153, 102));	
+	                break;
+        		case 5:
+	        		g.setColor(new Color(0, 102, 255));	
+	                break;
+        		case 6:
+	        		g.setColor(new Color(255, 0, 0));	
 	                break;
         		default : 
         			g.setColor(Color.GRAY);        		
@@ -122,7 +133,7 @@ public class TestFrame extends JFrame implements Listener {
         		g.fillRect(x*50, y*50, 50, 50);        		       		
     	        g.setColor(Color.BLACK);
     	        g.setFont(new Font("TimesRoman", Font.PLAIN, 10)); 
-    	        g.drawString(""+value[y][x].getAboveGroundResource().getShortDescription(), 5+x*50, y*50+13);
+    	        g.drawString(""+value[y][x].getTileCode(), 5+x*50, y*50+13);
     	        g.drawString(value[y][x].getTransportType().getName(), 5+x*50, y*50+23);
     	        g.drawString(value[y][x].getTopNetworkKey()+","+value[y][x].getDetailNetworkKey(), 5+x*50, y*50+33);	
         	}
@@ -147,8 +158,7 @@ public class TestFrame extends JFrame implements Listener {
 	 * Initeert stap voor stap de componenten die de UI opmaken
 	 * @param controller 
 	 */ 
-	private void initElements(Controller controller) {	
-				
+	private void initElements(Controller controller) {				
 		genericTable(optionsPanel,resourceOverview,controller.getResources(), controller.getResourceColumns());
 		genericTable(optionsPanel,supplyOverview,controller.getStocks(), controller.getStockColumns());
 		genericTable(optionsPanel,producerOverview,controller.getManufacturer(), controller.getManufactorerColumns());
@@ -160,9 +170,9 @@ public class TestFrame extends JFrame implements Listener {
 
 	private void genericTable(JPanel optionsPanel2, JTable table, Object[][] objects, List<String> list) {		
 		JScrollPane scrollPane = new JScrollPane(table);		
-		optionsPanel2.add(scrollPane);
 		table.setModel(new CustomTableModel(objects, list));
 		table.setRowSelectionInterval(0, 0);
+		optionsPanel2.add(scrollPane);
 	}
 
 	/** 
@@ -187,26 +197,31 @@ public class TestFrame extends JFrame implements Listener {
 	}
 
 	@Override
-	public synchronized void update(String message, Controller controller) {		
+	public synchronized void update(List<String> message, Controller controller) {		
 		SwingUtilities.invokeLater(new UpdateGUI(message, controller));
 	}
 	
 	class UpdateGUI implements Runnable {
 		
 		Controller controller;
-		String message;
+		List<String> message;
 		
-		private UpdateGUI(String message, Controller controller) {
+		private UpdateGUI(List<String> message, Controller controller) {
 			this.controller =controller;
 			this.message = message;
 		}
 		
 		@Override
 		public void run() {
-			if(message.equals("Simulate")) {
+			if(message.get(0).equals("Simulate")) {
 				supplyOverview.setModel(new CustomTableModel(controller.getStocks(), controller.getStockColumns()));
-			} else if(message.equals("Click")) {
+			} else if(message.get(0).equals("Clicked")&&!message.get(3).equals("Information")) {
 				setDisplayImage(controller.getNodes());
+			} else if(message.get(3).equals("Information")) {
+				textArea.setText(null);
+				for(String string:controller.getNodes()[Integer.parseInt(message.get(1))][Integer.parseInt(message.get(2))].getStatus()) {
+					textArea.append(string+"\n");
+				}
 			}			
 		}
 		

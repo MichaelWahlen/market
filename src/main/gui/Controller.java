@@ -25,12 +25,14 @@ public class Controller implements Observer {
 
 	public synchronized void runSimulationStep() {
 		world.simulateTick();		
-		updateListeners("Simulate");
+		List<String> update = new ArrayList<String>();
+		update.add("Simulate");
+		updateListeners(update);
 	}
 
-	public synchronized void updateListeners(String message) {
+	public synchronized void updateListeners(List<String> input) {
 		for(Listener listener:listeners) {
-			listener.update(message,this);
+			listener.update(input,this);
 		}		
 	}
 	
@@ -48,9 +50,12 @@ public class Controller implements Observer {
 			pauze();
 		} else {
 			List<String> input = StringUtilities.decomposeValueSeperatedString(update, '|');
-			if(input.get(0).equals("Clicked")) {				
-				world.switchTile(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),input.get(3),Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)));
-				updateListeners("Click");
+			if(input.get(0).equals("Clicked")&&!input.get(3).equals("Information")) {				
+				world.switchTile(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),input.get(3),Integer.parseInt(input.get(4)), Integer.parseInt(input.get(5)));
+				updateListeners(input);
+			}
+			else if(input.get(3).equals("Information")){				
+				updateListeners(input);
 			}
 			
 		}

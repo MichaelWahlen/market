@@ -4,6 +4,7 @@ public class Tile {
 	private int code;
 	private String name;
 	private int weight;
+	private boolean passable;
 	
 	public int getCode() {
 		return code;
@@ -23,6 +24,12 @@ public class Tile {
 	}
 	public void setWeight(int weight) {
 		this.weight = weight;
+	}
+	public boolean isPassable() {
+		return passable;
+	}
+	public void setPassable(boolean passable) {
+		this.passable = passable;
 	}
 	
 	
