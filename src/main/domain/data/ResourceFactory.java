@@ -2,7 +2,6 @@ package main.domain.data;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ public class ResourceFactory {
 	
 	private static ResourceFactory instance = null;
 	private Map<String, GenerateableResource> resources = new HashMap<String, GenerateableResource>();
+	private static List<String> columnNames;
 		   
 	private ResourceFactory() {	
 		loadProduct();
@@ -39,8 +39,10 @@ public class ResourceFactory {
 	}
 	
 	private void loadProduct() {
-		List<String> products = ParserCSV.parseToStrings(new File("src/resources/Resource.csv"));
-		for(String string:products) {			
+		List<String> initialStrings = ParserCSV.parseToStrings(new File("src/resources/Resource.csv"));
+		columnNames = StringUtilities.decomposeValueSeperatedString(initialStrings.get(0), '|');
+		initialStrings.remove(0);
+		for(String string:initialStrings) {			
 			List<String> moreString = StringUtilities.decomposeValueSeperatedString(string, '|');
 			Resource resource = new Resource(moreString.get(1),moreString.get(3),Integer.parseInt(moreString.get(2)),Boolean.parseBoolean(moreString.get(4)));
 			resource.setCode(Integer.parseInt(moreString.get(0)));
@@ -56,7 +58,7 @@ public class ResourceFactory {
 	}
 	
 	public static List<String> getColumns() {
-		return Arrays.asList("code","name","defaultGenerationRate","shortDescription","isCompound","demand","demandAmount"); 
+		return columnNames; 
 	}
 	
 	public Object[][] getObjectRepresentation(){	

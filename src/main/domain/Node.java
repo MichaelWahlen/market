@@ -3,6 +3,7 @@ package main.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.domain.data.Switch;
 import main.domain.data.Tile;
 import main.domain.data.Transport;
 
@@ -17,7 +18,8 @@ public class Node {
 	private int x;
 	private int y;
 	private int travelledDistance = 0;
-	private int heuristicDistance = 0;	
+	private int heuristicDistance = 0;
+	private Switch localSwitch;
 	
 	public List<String> getStatus(){
 		List<String> overviewList = new ArrayList<String>();
@@ -29,14 +31,27 @@ public class Node {
 		overviewList.add("Tile weight: "+ tile.getWeight());
 		overviewList.add("X coord: "+x);
 		overviewList.add("Y coord: "+y);
+		if(localSwitch!=null) {
+			overviewList.add("Switch: "+localSwitch.getName());
+		}
 		return overviewList;
 	}
 	
+	public boolean isVacant() {
+		if(isPassable() && transportType.getCode()==99 && localSwitch == null) {
+			return true;
+		}
+		return false;
+	}
 	
 	public int getTotalDistanceToGoal() {
 		return travelledDistance+heuristicDistance;
 	}
-
+	
+	public void setSwitch(Switch localSwitch) {
+		this.localSwitch = localSwitch;
+	}
+	
 	public int getDetailNetworkKey() {
 		return detailNetworkKey;
 	}

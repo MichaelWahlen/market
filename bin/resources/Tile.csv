@@ -1,0 +1,7 @@
+Code|Name|Weight|Passable
+1|Sand|2|true
+2|Grass|3|true
+3|Forest|4|true
+4|Stone|1|true
+5|Water|99|true
+6|RoadBlock|99|false

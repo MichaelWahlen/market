@@ -2,7 +2,6 @@ package main.domain.data;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ public class ManufacturerFactory {
 	
 	private static ManufacturerFactory instance = null;
 	private Map<String, Manufacturer> types = new HashMap<String, Manufacturer>();
+	private static List<String> columnNames;
 		   
 	private ManufacturerFactory(ResourceFactory resourceFactory) {	
 		loadManufacturers(resourceFactory);
@@ -37,8 +37,10 @@ public class ManufacturerFactory {
 	}
 	
 	private void loadManufacturers(ResourceFactory resourceFactory) {
-		List<String> manufacturerstring = ParserCSV.parseToStrings(new File("src/resources/Manufacturer.csv"));
-		for(String string:manufacturerstring) {			
+		List<String> initialStrings = ParserCSV.parseToStrings(new File("src/resources/Manufacturer.csv"));
+		columnNames = StringUtilities.decomposeValueSeperatedString(initialStrings.get(0), '|');
+		initialStrings.remove(0);
+		for(String string:initialStrings) {			
 			List<String> moreString = StringUtilities.decomposeValueSeperatedString(string, '|');
 			Manufacturer manufacturer = new Manufacturer(resourceFactory.getResourceKeys());
 			manufacturer.setCode(Integer.parseInt(moreString.get(0)));
@@ -52,7 +54,7 @@ public class ManufacturerFactory {
 	}
 	
 	public static List<String> getColumns() {
-		return Arrays.asList("code","name"); 
+		return columnNames; 
 	}
 	
 	public Object[][] getObjectRepresentation(){	

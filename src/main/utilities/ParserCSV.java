@@ -16,9 +16,7 @@ public class ParserCSV {
 	    String line = null;
 	    List<String> parsedRows = new ArrayList<String>();
 		try {
-			reader = new BufferedReader(new FileReader (sourceFile.getPath()));
-			// skip header line for now
-			reader.readLine();					
+			reader = new BufferedReader(new FileReader (sourceFile.getPath()));							
 			while((line = reader.readLine()) != null) {
                 parsedRows.add(line);
             }

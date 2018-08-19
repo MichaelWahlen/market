@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import main.domain.data.TransportFactory;
+import main.domain.data.FactoryHolder;
+import main.domain.data.GenericFactory;
+import main.domain.data.Transport;
+
 
 
 public class Web {
@@ -16,7 +19,7 @@ public class Web {
 	private Map<Integer,List<Node>> topLevelNetworks = new HashMap<Integer, List<Node>>();
 	private Map<Integer,List<Node>> detailNetworks = new HashMap<Integer, List<Node>>();
 	private int lastAssignedKey = 0;
-	private TransportFactory transportTypeFactory = TransportFactory.getInstance();
+	private GenericFactory<Transport> transportTypeFactory = FactoryHolder.getInstance().getTransportInstance();
 	private int maxX;
 	private int maxY;
 	
@@ -89,8 +92,8 @@ public class Web {
 		int pickedNetTopNetWork = getLargestKey(topSet,topLevelNetworks);	
 		int pickedDetailNetWork = getLargestKey(detailSet,detailNetworks);
 		//--------------------------------		
-		setNetwork(topSet,topLevelNetworks,true,nodes);		
-		setNetwork(detailSet,detailNetworks,false,nodes);	
+		setNetwork(pickedNetTopNetWork,topSet,topLevelNetworks,true,nodes);		
+		setNetwork(pickedDetailNetWork,detailSet,detailNetworks,false,nodes);	
 		//--------------------------------
 				
 		List<Node> selection = detailNetworks.get(pickedDetailNetWork);
@@ -120,17 +123,16 @@ public class Web {
 		topLevelNetworks.put(lastAssignedKey,topNode);		
 	}
 
-	private void setNetwork(Set<Integer> keys, Map<Integer, List<Node>> networks, boolean isTop, List<Node> nodes) {
-		int chosenKey = getLargestKey(keys,networks);
-		List<Node> selectedNetwork = networks.get(chosenKey);
+	private void setNetwork(int pickedNetwork, Set<Integer> keys, Map<Integer, List<Node>> networks, boolean isTop, List<Node> nodes) {		
+		List<Node> selectedNetwork = networks.get(pickedNetwork);
 		for(Integer integer: keys) {
-			if(integer!=0 && integer!=chosenKey) {
+			if(integer!=0 && integer!=pickedNetwork) {
 				List<Node> selection = networks.get(integer);
 				for(Node node:selection) {					
 					if(isTop) {
-						node.setTopNetworkKey(chosenKey);
+						node.setTopNetworkKey(pickedNetwork);
 					} else {
-						node.setDetailNetworkKey(chosenKey);
+						node.setDetailNetworkKey(pickedNetwork);
 					}
 					selectedNetwork.add(node);								
 				}

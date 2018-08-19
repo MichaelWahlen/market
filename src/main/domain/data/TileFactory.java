@@ -2,7 +2,6 @@ package main.domain.data;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ public class TileFactory {
 	
 	private static TileFactory instance = null;
 	private Map<String, Tile> types = new HashMap<String, Tile>();
+	private static List<String> columnNames;
 		   
 	private TileFactory() {	
 		loadTypes();
@@ -38,6 +38,8 @@ public class TileFactory {
 	
 	private void loadTypes() {
 		List<String> initialStrings = ParserCSV.parseToStrings(new File("src/resources/Tile.csv"));
+		columnNames = StringUtilities.decomposeValueSeperatedString(initialStrings.get(0), '|');
+		initialStrings.remove(0);
 		for(String string:initialStrings) {			
 			List<String> moreString = StringUtilities.decomposeValueSeperatedString(string, '|');
 			Tile tile = new Tile();
@@ -50,7 +52,7 @@ public class TileFactory {
 	}
 	
 	public static List<String> getColumns() {
-		return Arrays.asList("code","name","weight","isPassable"); 
+		return columnNames; 
 	}
 	
 	public Object[][] getObjectRepresentation(){	

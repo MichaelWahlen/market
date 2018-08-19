@@ -1,10 +1,14 @@
 package main.domain;
 import java.util.List;
 
+import main.domain.data.FactoryHolder;
+import main.domain.data.GenericFactory;
 import main.domain.data.ManufacturerFactory;
 import main.domain.data.ResourceFactory;
+import main.domain.data.Switch;
 import main.domain.data.TileFactory;
-import main.domain.data.TransportFactory;
+import main.domain.data.Transport;
+
 import main.domain.map.MapCreation;
 import main.domain.map.Router;
 
@@ -16,14 +20,18 @@ public class World {
 	private StockPile stockPile;
 	private ResourceFactory resourceFactory = ResourceFactory.getInstance();
 	private ManufacturerFactory manufacturerFactory = ManufacturerFactory.getInstance();
-	private TransportFactory transportTypeFactory = TransportFactory.getInstance();
+	private GenericFactory<Transport> transportTypeFactory = null;
 	private TileFactory tileFactory = TileFactory.getInstance();
+	private GenericFactory<Switch> switchFactory = null;
+	private FactoryHolder fact = FactoryHolder.getInstance();
 	private Router router;
 	
 	public World() {			
 		createTile();
 		createHub();
-		router = new Router(nodes);
+		router = new Router(nodes);		
+		transportTypeFactory = fact.getTransportInstance();
+		switchFactory = fact.getSwitchFactory();
 	}	
 	
 	private void createHub() {
@@ -38,8 +46,7 @@ public class World {
 			if(nodes!=null) {
 				web.setTransportType(nodes, Integer.parseInt(string));
 			}
-		}
-		
+		}		
 	}
 	
 	private void createTile() {		
@@ -92,7 +99,7 @@ public class World {
 	}
 
 	public List<String> getTransportColumns() {
-		return TransportFactory.getColumns();
+		return transportTypeFactory.getColumns();
 	}
 	
 	public Object[][] getTransportTypes() {		
@@ -105,6 +112,21 @@ public class World {
 	
 	public Object[][] getTiles() {		
 		return tileFactory.getObjectRepresentation();
+	}
+
+	public List<String> getSwitchColumns() {
+		return switchFactory.getColumns();
+	}
+	
+	public Object[][] getSwitches() {		
+		return switchFactory.getObjectRepresentation();
+	}
+
+	public void addSwitch(int x, int y, int switchKey) {
+		Node selectedNode = nodes[x][y];	
+		if(selectedNode.isVacant()) {
+			selectedNode.setSwitch(switchFactory.getType(switchKey));
+		}		
 	}
 	
 

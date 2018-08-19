@@ -54,6 +54,10 @@ public class Controller implements Observer {
 				world.switchTile(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),input.get(3),Integer.parseInt(input.get(4)), Integer.parseInt(input.get(5)));
 				updateListeners(input);
 			}
+			else if(input.get(0).equals("Switch")) {
+				System.out.println("Switch");
+				world.addSwitch(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),Integer.parseInt(input.get(3)));
+			}
 			else if(input.get(3).equals("Information")){				
 				updateListeners(input);
 			}
@@ -99,6 +103,14 @@ public class Controller implements Observer {
 	
 	public Object[][] getTiles() {
 		return world.getTiles();
+	}
+	
+	public List<String> getSwitchColumns() {		
+		return world.getSwitchColumns();
+	}
+	
+	public Object[][] getSwitches() {
+		return world.getSwitches();
 	}
 
 

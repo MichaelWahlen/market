@@ -1,6 +1,9 @@
 package main.domain.data;
 
-public class Transport {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Transport implements StaticData{
 	private String name = "Nothing";
 	private int code;
 
@@ -18,6 +21,14 @@ public class Transport {
 
 	public void setCode(int code) {
 		this.code = code;
+	}
+
+	@Override
+	public List<String> getDetailsInOrder() {
+		List<String> returns = new ArrayList<String>();
+		returns.add(""+code);
+		returns.add(name);		
+		return returns;
 	}
 	
 }

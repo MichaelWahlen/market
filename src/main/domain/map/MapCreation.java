@@ -3,16 +3,19 @@ package main.domain.map;
 import java.util.Random;
 
 import main.domain.Node;
+import main.domain.data.FactoryHolder;
+import main.domain.data.GenericFactory;
 import main.domain.data.ResourceFactory;
 import main.domain.data.TileFactory;
-import main.domain.data.TransportFactory;
+import main.domain.data.Transport;
+
 
 public class MapCreation {	
 
 	public static Node[][] createSurface(int rows, int columns){
 		TileFactory tileFactory = TileFactory.getInstance();
 		ResourceFactory productFactory = ResourceFactory.getInstance();
-		TransportFactory transportFactory = TransportFactory.getInstance();
+		GenericFactory<Transport> transportFactory = FactoryHolder.getInstance().getTransportInstance();
 		Node[][] nodes = new Node[rows][columns];
 		Random rand = new Random();
 		for(int i = 0;i<nodes.length;i++) {

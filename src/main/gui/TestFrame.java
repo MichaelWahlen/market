@@ -32,11 +32,13 @@ public class TestFrame extends JFrame implements Listener {
 	private JTable producerOverview = new JTable();
 	private JTable transportOverview= new JTable();
 	private JTable tileOverview= new JTable();
+	private JTable switchOverview= new JTable();
 	private JPanel optionsPanel = new JPanel(new GridLayout(2,3));
 	private BufferedImage displayedImage = null;
 	private JRadioButton transportButton = new JRadioButton("Transport");
 	private JRadioButton resourceButton = new JRadioButton("Resource");
 	private JRadioButton noneButton = new JRadioButton("None");	
+	private JRadioButton switchButton = new JRadioButton("Switch");	
 	private List<Observer> observers = new ArrayList<Observer>();
 
 	public TestFrame(Controller controller) {
@@ -53,16 +55,18 @@ public class TestFrame extends JFrame implements Listener {
 	}
 	
 	private void addButtons() {
-		JPanel panel = new JPanel(new GridLayout(3,1));        
+		JPanel panel = new JPanel(new GridLayout(2,2));        
 	    ButtonGroup bG = new ButtonGroup();
 	    bG.add(transportButton);
 	    bG.add(resourceButton);
 	    bG.add(noneButton);
+	    bG.add(switchButton);
 	    panel.add(transportButton);
 	    panel.add(resourceButton);
 	    panel.add(noneButton);
+	    panel.add(switchButton);
 	    transportButton.setSelected(true);
-	    panel.setBounds(0,0,100,50);
+	    panel.setBounds(1005,50,175,100);
 	    this.add(panel);
 	}
 
@@ -83,13 +87,20 @@ public class TestFrame extends JFrame implements Listener {
 			public void mouseReleased(MouseEvent release) {				   
 			    String valueInCell = "";			    
             	if(resourceButton.isSelected()) { 
-                	valueInCell = (String) resourceOverview.getValueAt(resourceOverview.getSelectedRow(), 1);                	
+                	valueInCell = (String) resourceOverview.getValueAt(resourceOverview.getSelectedRow(), 1); 
+                	updateAllObservers("Clicked|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell+"|"+(release.getY()/50)+"|"+(release.getX()/50));
                 }  else if (noneButton.isSelected()) {
                 	valueInCell = "Information";
-                }	else {
-                	valueInCell = ""+(int) transportOverview.getValueAt(transportOverview.getSelectedRow(), 0);                	
+                	updateAllObservers("Clicked|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell+"|"+(release.getY()/50)+"|"+(release.getX()/50));
+                }	else if (switchButton.isSelected()) {
+                	valueInCell =  (String) switchOverview.getValueAt(switchOverview.getSelectedRow(), 0);
+                	updateAllObservers("Switch|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell);
+                }
+                	else {
+                	valueInCell = ""+ transportOverview.getValueAt(transportOverview.getSelectedRow(), 0); 
+                	updateAllObservers("Clicked|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell+"|"+(release.getY()/50)+"|"+(release.getX()/50));
                 }                
-            	updateAllObservers("Clicked|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell+"|"+(release.getY()/50)+"|"+(release.getX()/50));
+            	
 			}			
 		
         });
@@ -164,6 +175,7 @@ public class TestFrame extends JFrame implements Listener {
 		genericTable(optionsPanel,producerOverview,controller.getManufacturer(), controller.getManufactorerColumns());
 		genericTable(optionsPanel,transportOverview,controller.getTransportTypes(), controller.getTransportColumns());
 		genericTable(optionsPanel,tileOverview,controller.getTiles(), controller.getTileColumns());
+		genericTable(optionsPanel,switchOverview,controller.getSwitches(), controller.getSwitchColumns());
 		optionsPanel.setBounds(1200,50,700,900);
 		add(optionsPanel);
 	}
