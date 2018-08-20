@@ -5,7 +5,10 @@ public class FactoryHolder {
 	private static FactoryHolder instance = null;
 	private GenericFactory<Switch> switchFactory = null;
 	private GenericFactory<Transport> transportFactory = null;
-	
+	private GenericFactory<Tile> tileFactory = null;
+	private GenericFactory<Resource> resourceFactory = null;
+	private GenericFactory<Manufacturer> manufacturerFactory = null;
+		
 	private FactoryHolder() {		
 	}
 	
@@ -17,23 +20,34 @@ public class FactoryHolder {
 		return instance;
 	}
 	
-	public GenericFactory<Transport>  getTransportInstance() {
-		return transportFactory;
+	@SuppressWarnings("unchecked")
+	public <T extends StaticData> GenericFactory<T> getGenericFactory(Class<T> classref){		
+		if(classref.getSimpleName().equals("Manufacturer")) {
+			return (GenericFactory<T>) manufacturerFactory;
+		}
+		if(classref.getSimpleName().equals("Transport")) {				
+			return (GenericFactory<T>) transportFactory;
+		}
+		if(classref.getSimpleName().equals("Switch")) {
+			return (GenericFactory<T>) switchFactory;
+		}
+		if(classref.getSimpleName().equals("Tile")) {
+			return (GenericFactory<T>) tileFactory;
+		}
+		if(classref.getSimpleName().equals("Resource")) {
+			return (GenericFactory<T>) resourceFactory;
+		}
+		return null;		
 	}
 	
-	public GenericFactory<Switch> getSwitchFactory(){
-		return switchFactory;
+	private void initFactories() {			
+			transportFactory = new GenericFactory<Transport>(Transport.class);			
+			switchFactory = new GenericFactory<Switch>(Switch.class);			
+			tileFactory = new GenericFactory<Tile>(Tile.class);			
+			resourceFactory = new GenericFactory<Resource>(Resource.class);			
+			manufacturerFactory = new GenericFactory<Manufacturer>(Manufacturer.class);		
 	}
+
 	
-	private void initFactories() {		
-		if (transportFactory==null) {
-			String fileLocation = "src/resources/Transport.csv";
-			transportFactory = new GenericFactory<Transport>(new TransportLoad(),fileLocation);
-		}
-		if (switchFactory==null) {
-			String fileLocation = "src/resources/Switch.csv";
-			switchFactory = new GenericFactory<Switch>(new SwitchLoad(),fileLocation);
-		}
-	}
 	
 }

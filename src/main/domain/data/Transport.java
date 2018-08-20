@@ -3,7 +3,10 @@ package main.domain.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.utilities.StringUtilities;
+
 public class Transport implements StaticData{
+	
 	private String name = "Nothing";
 	private int code;
 
@@ -30,5 +33,16 @@ public class Transport implements StaticData{
 		returns.add(name);		
 		return returns;
 	}
+
+	@Override
+	public StaticData get(String string) {
+		List<String> moreString = StringUtilities.decomposeValueSeperatedString(string, '|');
+		Transport type = new Transport();
+		type.setCode(Integer.parseInt(moreString.get(0)));
+		type.setName(moreString.get(1));		
+		return type;
+	}
+
+	
 	
 }

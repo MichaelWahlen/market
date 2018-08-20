@@ -98,7 +98,7 @@ public class TestFrame extends JFrame implements Listener {
                 }
                 	else {
                 	valueInCell = ""+ transportOverview.getValueAt(transportOverview.getSelectedRow(), 0); 
-                	updateAllObservers("Clicked|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell+"|"+(release.getY()/50)+"|"+(release.getX()/50));
+                	updateAllObservers("Transport|"+(press.y/50)+"|"+(press.x/50)+"|"+valueInCell+"|"+(release.getY()/50)+"|"+(release.getX()/50));
                 }                
             	
 			}			
@@ -239,5 +239,27 @@ public class TestFrame extends JFrame implements Listener {
 		
 	}
 
-	
+	@Override
+	public void update(String[] args, Controller controller) {
+		SwingUtilities.invokeLater(new UpdateGUI2(args, controller));		
+	}
+
+	class UpdateGUI2 implements Runnable {
+		
+		Controller controller;
+		String[] args;
+		
+		private UpdateGUI2(String[] args, Controller controller) {
+			this.controller =controller;
+			this.args = args;
+		}
+		
+		@Override
+		public void run() {
+			if(args[0].equals("Transport")) {				
+				setDisplayImage(controller.getNodes());			
+			}			
+		}
+		
+	}
 }

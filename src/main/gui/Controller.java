@@ -51,12 +51,18 @@ public class Controller implements Observer {
 		} else {
 			List<String> input = StringUtilities.decomposeValueSeperatedString(update, '|');
 			if(input.get(0).equals("Clicked")&&!input.get(3).equals("Information")) {				
-				world.switchTile(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),input.get(3),Integer.parseInt(input.get(4)), Integer.parseInt(input.get(5)));
-				updateListeners(input);
+//				world.switchTile(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),Integer.parseInt(input.get(3)),Integer.parseInt(input.get(4)), Integer.parseInt(input.get(5)));
+//				updateListeners(input);
 			}
 			else if(input.get(0).equals("Switch")) {
 				System.out.println("Switch");
 				world.addSwitch(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),Integer.parseInt(input.get(3)));
+			}
+			else if(input.get(0).equals("Transport")) {
+				world.buildTransportLine(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),Integer.parseInt(input.get(3)),Integer.parseInt(input.get(4)),Integer.parseInt(input.get(5)));
+				String[] args = new String[1];
+				args[0] = "Transport";
+				updateListeners(args);
 			}
 			else if(input.get(3).equals("Information")){				
 				updateListeners(input);
@@ -65,6 +71,12 @@ public class Controller implements Observer {
 		}
 	}
 	
+	private void updateListeners(String[] args) {
+		for(Listener listener:listeners) {
+			listener.update(args,this);
+		}		
+	}
+
 	public List<String> getResourceColumns(){
 		return world.getResourceColumns();
 	}

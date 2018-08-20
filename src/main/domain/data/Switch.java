@@ -3,6 +3,8 @@ package main.domain.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.utilities.StringUtilities;
+
 public class Switch implements StaticData {
 	
 	private Transport connectorA;
@@ -53,6 +55,18 @@ public class Switch implements StaticData {
 		returns.add(connectorB.getName());
 		return returns;
 	}
-	
+
+	@Override
+	public StaticData get(String string) {
+		List<String> moreString = StringUtilities.decomposeValueSeperatedString(string, '|');
+		Switch localSwitch = new Switch();
+		localSwitch.setCode(Integer.parseInt(moreString.get(0)));
+		localSwitch.setName(moreString.get(1));	
+		localSwitch.setConnectorA(FactoryHolder.getInstance().getGenericFactory(Transport.class).getType(Integer.parseInt(moreString.get(2))));
+		localSwitch.setConnectorB(FactoryHolder.getInstance().getGenericFactory(Transport.class).getType(Integer.parseInt(moreString.get(3))));
+		return localSwitch;
+	}
+
+		
 	
 }

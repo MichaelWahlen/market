@@ -7,5 +7,6 @@ public interface StaticData {
 	public int getCode();
 	public String getName();
 	public List<String> getDetailsInOrder();
-
+	public StaticData get(String string);
+	
 }

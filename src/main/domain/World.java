@@ -3,10 +3,10 @@ import java.util.List;
 
 import main.domain.data.FactoryHolder;
 import main.domain.data.GenericFactory;
-import main.domain.data.ManufacturerFactory;
-import main.domain.data.ResourceFactory;
+import main.domain.data.Manufacturer;
+import main.domain.data.Resource;
 import main.domain.data.Switch;
-import main.domain.data.TileFactory;
+import main.domain.data.Tile;
 import main.domain.data.Transport;
 
 import main.domain.map.MapCreation;
@@ -18,35 +18,42 @@ public class World {
 	private Web web;
 	private Node[][] nodes;
 	private StockPile stockPile;
-	private ResourceFactory resourceFactory = ResourceFactory.getInstance();
-	private ManufacturerFactory manufacturerFactory = ManufacturerFactory.getInstance();
-	private GenericFactory<Transport> transportTypeFactory = null;
-	private TileFactory tileFactory = TileFactory.getInstance();
-	private GenericFactory<Switch> switchFactory = null;
 	private FactoryHolder fact = FactoryHolder.getInstance();
+	private GenericFactory<Transport> transportTypeFactory = null;
+	private GenericFactory<Tile> tileFactory = null;
+	private GenericFactory<Switch> switchFactory = null;
+	private GenericFactory<Resource> resourceFactory = null;
+	private GenericFactory<Manufacturer> manufacturerFactory = null;
 	private Router router;
 	
 	public World() {			
+		
+		transportTypeFactory = fact.getGenericFactory(Transport.class);
+		switchFactory = fact.getGenericFactory(Switch.class);
+		tileFactory = fact.getGenericFactory(Tile.class);
+		resourceFactory = fact.getGenericFactory(Resource.class);
+		manufacturerFactory = fact.getGenericFactory(Manufacturer.class);
 		createTile();
 		createHub();
 		router = new Router(nodes);		
-		transportTypeFactory = fact.getTransportInstance();
-		switchFactory = fact.getSwitchFactory();
+		
 	}	
 	
 	private void createHub() {
-		stockPile = new StockPile(resourceFactory.getResourceKeys());		
+		stockPile = new StockPile(resourceFactory.getKeys());		
 	}
 
-	public void switchTile(int fromX, int fromY, String string, int toX, int toY) {
-		if(resourceFactory.getType(string)!=null) {
-			nodes[fromX][fromY].setAboveGroundResource(resourceFactory.getType(string));
-		} else if(nodes[toX][toY].isPassable() && nodes[fromX][fromY].isPassable()) {
-			List<Node> nodes  = router.getRoute(fromX,fromY,toX,toY,string,0);			
+	public void switchTile(int fromX, int fromY, int string, int toX, int toY) {		
+			nodes[fromX][fromY].setAboveGroundResource(resourceFactory.getType(string));			
+	}
+	
+	public void buildTransportLine(int fromX, int fromY, int string, int toX, int toY) {
+		if(nodes[toX][toY].isPassable() && nodes[fromX][fromY].isPassable()) {
+			List<Node> nodes  = router.getRoute(fromX,fromY,toX,toY,0);			
 			if(nodes!=null) {
-				web.setTransportType(nodes, Integer.parseInt(string));
+				web.setTransportType(nodes, string);
 			}
-		}		
+		}
 	}
 	
 	private void createTile() {		
@@ -59,10 +66,10 @@ public class World {
 			for(int j =0;j<nodes[0].length;j++) {
 				GenerateableResource tileResource = nodes[i][j].getAboveGroundResource();
 				if(!tileResource.isCompoundResource()) {
-					stockPile.stockImport(tileResource.getName(), tileResource.getDefaultGenerationRate());
+					stockPile.stockImport(tileResource.getCode(), tileResource.getDefaultGenerationRate());
 				} else {
 					if(stockPile.takeFromStock(tileResource.getRequiredResources())) {
-						stockPile.stockImport(tileResource.getName(), tileResource.getDefaultGenerationRate());
+						stockPile.stockImport(tileResource.getCode(), tileResource.getDefaultGenerationRate());
 					}
 				}				
 			}
@@ -74,7 +81,7 @@ public class World {
 	}
 	
 	public List<String> getResourceColumns() {
-		return ResourceFactory.getColumns();
+		return resourceFactory.getColumns();
 	}
 
 
@@ -91,7 +98,7 @@ public class World {
 	}
 	
 	public List<String> getManufactoryColumns() {
-		return ManufacturerFactory.getColumns();
+		return manufacturerFactory.getColumns();
 	}
 	
 	public Object[][] getManufacturers() {		
@@ -107,7 +114,7 @@ public class World {
 	}
 
 	public List<String> getTileColumns() {
-		return TileFactory.getColumns();
+		return tileFactory.getColumns();
 	}
 	
 	public Object[][] getTiles() {		

@@ -9,18 +9,28 @@ import java.util.Map;
 import main.utilities.ParserCSV;
 import main.utilities.StringUtilities;
 
+
 public class GenericFactory<T extends StaticData> {
 	
 	private Map<Integer, T> types = new HashMap<Integer, T>();	
-	private static List<String> columnNames;	
-
-	public GenericFactory(LoadTypes<T> type, String fileLocation) {	
-		List<String> initialStrings = ParserCSV.parseToStrings(new File(fileLocation));
+	private List<String> columnNames;	
+	
+	
+	//"src/resources/Transport.csv"
+	public GenericFactory(Class<T> classRef) {	
+		List<String> initialStrings = ParserCSV.parseToStrings(new File("src/resources/"+classRef.getSimpleName()+".csv"));
 		columnNames = StringUtilities.decomposeValueSeperatedString(initialStrings.get(0), '|');
-		initialStrings.remove(0);
-		for(String string:initialStrings) {
-			type.loadTypes(string, types);
-		}		
+		initialStrings.remove(0);		
+		try {
+			T trya = classRef.newInstance();
+			for(String string:initialStrings) {
+				@SuppressWarnings("unchecked")
+				T type = (T) trya.get(string);
+				types.put(type.getCode(), type);
+			}
+		} catch (Exception e) {			
+			e.printStackTrace();
+		} 		
 	}
 	   
 	public T getType(int switchKey){		  	   

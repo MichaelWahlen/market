@@ -8,25 +8,25 @@ import java.util.Map.Entry;
 
 public class StockPile {
 	
-	private Map<String, Integer> stock = new HashMap<String, Integer>();
+	private Map<Integer, Integer> stock = new HashMap<Integer, Integer>();
 
-	public StockPile(List<String> productKeys) {
-		for(String productKey:productKeys) {
+	public StockPile(List<Integer> startStockPile) {
+		for(Integer productKey:startStockPile) {
 			stock.put(productKey, 0);
 		}
 	}	
 	
-	public Map<String, Integer> getStock() {
+	public Map<Integer, Integer> getStock() {
 		return stock;
 	}
 
-	public synchronized void stockImport(String key, int amount) {
+	public synchronized void stockImport(Integer key, int amount) {
 		stock.put(key, stock.get(key)+amount);
 	}
 	
-	public synchronized boolean takeFromStock(Map<String, Integer> requiredResources) {		
+	public synchronized boolean takeFromStock(Map<Integer, Integer> requiredResources) {		
 		Boolean isAllAccountedFor = true;
-		for(Entry<String, Integer> entry: requiredResources.entrySet()) {
+		for(Entry<Integer, Integer> entry: requiredResources.entrySet()) {
 			Integer availableStock = stock.get(entry.getKey());
 			Integer requiredAmount = entry.getValue();
 			if(availableStock<requiredAmount) {
@@ -35,7 +35,7 @@ public class StockPile {
 			}
 		}
 		if(isAllAccountedFor) {
-			for(Entry<String, Integer> entry: requiredResources.entrySet()) {
+			for(Entry<Integer, Integer> entry: requiredResources.entrySet()) {
 				stock.put(entry.getKey(), stock.get(entry.getKey())-entry.getValue());
 			}
 		}		
@@ -45,7 +45,7 @@ public class StockPile {
 	public Object[][] stockToObjects(){		
 		int i = 0;
 		Object[][] returnValue = new Object[stock.size()][2];
-		for(Entry<String, Integer> entry: stock.entrySet()) {
+		for(Entry<Integer, Integer> entry: stock.entrySet()) {
 			returnValue[i][0] = entry.getKey();
 			returnValue[i][1] = entry.getValue();
 			i++;
@@ -57,7 +57,7 @@ public class StockPile {
 		return Arrays.asList("name","stock"); 
 	}
 
-	public Integer stockExport(String key, Integer amount) {
+	public Integer stockExport(Integer key, Integer amount) {
 		Integer availableStock = stock.get(key);
 		Integer returnValue = 0;
 		if(availableStock>=amount) {
