@@ -62,8 +62,8 @@ public class Switch implements StaticData {
 		Switch localSwitch = new Switch();
 		localSwitch.setCode(Integer.parseInt(moreString.get(0)));
 		localSwitch.setName(moreString.get(1));	
-		localSwitch.setConnectorA(FactoryHolder.getInstance().getGenericFactory(Transport.class).getType(Integer.parseInt(moreString.get(2))));
-		localSwitch.setConnectorB(FactoryHolder.getInstance().getGenericFactory(Transport.class).getType(Integer.parseInt(moreString.get(3))));
+		localSwitch.setConnectorA(FactoryHolder.getGenericFactory(Transport.class).getType(Integer.parseInt(moreString.get(2))));
+		localSwitch.setConnectorB(FactoryHolder.getGenericFactory(Transport.class).getType(Integer.parseInt(moreString.get(3))));
 		return localSwitch;
 	}
 

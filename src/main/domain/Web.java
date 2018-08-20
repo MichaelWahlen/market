@@ -19,7 +19,7 @@ public class Web {
 	private Map<Integer,List<Node>> topLevelNetworks = new HashMap<Integer, List<Node>>();
 	private Map<Integer,List<Node>> detailNetworks = new HashMap<Integer, List<Node>>();
 	private int lastAssignedKey = 0;
-	private GenericFactory<Transport> transportTypeFactory = FactoryHolder.getInstance().getGenericFactory(Transport.class);;
+	private GenericFactory<Transport> transportTypeFactory = FactoryHolder.getGenericFactory(Transport.class);;
 	private int maxX;
 	private int maxY;
 	

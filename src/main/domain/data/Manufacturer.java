@@ -31,7 +31,7 @@ public class Manufacturer implements Producer, StaticData {
 	}
 	
 	public void resetStockpile() {
-		localStockPile = new StockPile(FactoryHolder.getInstance().getGenericFactory(Resource.class).getKeys());
+		localStockPile = new StockPile(FactoryHolder.getGenericFactory(Resource.class).getKeys());
 	}
 	
 	public Integer exportResource(Integer key, Integer amount) {		
@@ -93,7 +93,7 @@ public class Manufacturer implements Producer, StaticData {
 	@Override
 	public StaticData get(String string) {
 		List<String> moreString = StringUtilities.decomposeValueSeperatedString(string, '|');
-		GenericFactory<Resource> resourceFactory = FactoryHolder.getInstance().getGenericFactory(Resource.class);
+		GenericFactory<Resource> resourceFactory = FactoryHolder.getGenericFactory(Resource.class);
 		Manufacturer manufacturer = new Manufacturer();
 		manufacturer.setCode(Integer.parseInt(moreString.get(0)));
 		manufacturer.setName(moreString.get(1));

@@ -13,9 +13,9 @@ import main.domain.data.Transport;
 public class MapCreation {	
 
 	public static Node[][] createSurface(int rows, int columns){
-		GenericFactory<Tile> tileFactory = FactoryHolder.getInstance().getGenericFactory(Tile.class);
-		GenericFactory<Resource> productFactory = FactoryHolder.getInstance().getGenericFactory(Resource.class);
-		GenericFactory<Transport> transportFactory = FactoryHolder.getInstance().getGenericFactory(Transport.class);
+		GenericFactory<Tile> tileFactory = FactoryHolder.getGenericFactory(Tile.class);
+		GenericFactory<Resource> productFactory = FactoryHolder.getGenericFactory(Resource.class);
+		GenericFactory<Transport> transportFactory = FactoryHolder.getGenericFactory(Transport.class);
 		Node[][] nodes = new Node[rows][columns];
 		Random rand = new Random();
 		for(int i = 0;i<nodes.length;i++) {

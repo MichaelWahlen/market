@@ -13,10 +13,8 @@ import main.utilities.StringUtilities;
 public class GenericFactory<T extends StaticData> {
 	
 	private Map<Integer, T> types = new HashMap<Integer, T>();	
-	private List<String> columnNames;	
+	private List<String> columnNames;		
 	
-	
-	//"src/resources/Transport.csv"
 	public GenericFactory(Class<T> classRef) {	
 		List<String> initialStrings = ParserCSV.parseToStrings(new File("src/resources/"+classRef.getSimpleName()+".csv"));
 		columnNames = StringUtilities.decomposeValueSeperatedString(initialStrings.get(0), '|');

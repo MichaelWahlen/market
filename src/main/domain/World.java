@@ -18,7 +18,7 @@ public class World {
 	private Web web;
 	private Node[][] nodes;
 	private StockPile stockPile;
-	private FactoryHolder fact = FactoryHolder.getInstance();
+	
 	private GenericFactory<Transport> transportTypeFactory = null;
 	private GenericFactory<Tile> tileFactory = null;
 	private GenericFactory<Switch> switchFactory = null;
@@ -26,17 +26,15 @@ public class World {
 	private GenericFactory<Manufacturer> manufacturerFactory = null;
 	private Router router;
 	
-	public World() {			
-		
-		transportTypeFactory = fact.getGenericFactory(Transport.class);
-		switchFactory = fact.getGenericFactory(Switch.class);
-		tileFactory = fact.getGenericFactory(Tile.class);
-		resourceFactory = fact.getGenericFactory(Resource.class);
-		manufacturerFactory = fact.getGenericFactory(Manufacturer.class);
+	public World() {		
+		transportTypeFactory = FactoryHolder.getGenericFactory(Transport.class);
+		switchFactory = FactoryHolder.getGenericFactory(Switch.class);
+		tileFactory = FactoryHolder.getGenericFactory(Tile.class);
+		resourceFactory = FactoryHolder.getGenericFactory(Resource.class);
+		manufacturerFactory = FactoryHolder.getGenericFactory(Manufacturer.class);
 		createTile();
 		createHub();
 		router = new Router(nodes);		
-		
 	}	
 	
 	private void createHub() {
