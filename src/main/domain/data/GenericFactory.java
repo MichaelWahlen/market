@@ -6,14 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import main.gui.HasTableRepresentation;
+import main.gui.TableRepresentation;
 import main.utilities.ParserCSV;
 import main.utilities.StringUtilities;
 
 
-public class GenericFactory<T extends StaticData> {
+
+public class GenericFactory<T extends StaticData> implements HasTableRepresentation{
 	
 	private Map<Integer, T> types = new HashMap<Integer, T>();	
-	private List<String> columnNames;		
+	private List<String> columnNames;
+	private TableRepresentation tablePresentation;
 	
 	public GenericFactory(Class<T> classRef) {	
 		List<String> initialStrings = ParserCSV.parseToStrings(new File("src/resources/"+classRef.getSimpleName()+".csv"));
@@ -58,6 +62,16 @@ public class GenericFactory<T extends StaticData> {
 			j++;
 		}
 		return typeToObjects;
+	}
+
+	@Override
+	public TableRepresentation getTableRepresentation() {
+		if(tablePresentation==null) {
+			tablePresentation = new TableRepresentation();
+			tablePresentation.setColumnNames(getColumns());
+			tablePresentation.setObjectRepresentation(getObjectRepresentation());
+		}		
+		return tablePresentation;
 	}
 	
 }

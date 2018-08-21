@@ -6,25 +6,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import main.domain.data.FactoryHolder;
-import main.domain.data.GenericFactory;
-import main.domain.data.Transport;
-
-
+import main.domain.map.LocalMap;
+import main.domain.map.Router;
+import main.gui.TableRepresentation;
 
 public class Web {
 	
 	private Node[][] nodes;
+	private Router router;
 	private Map<Integer,List<Node>> topLevelNetworks = new HashMap<Integer, List<Node>>();
 	private Map<Integer,List<Node>> detailNetworks = new HashMap<Integer, List<Node>>();
+	
 	private int lastAssignedKey = 0;
-	private GenericFactory<Transport> transportTypeFactory = FactoryHolder.getGenericFactory(Transport.class);;
 	private int maxX;
 	private int maxY;
+	private LocalMap map = new LocalMap();	
 	
-	public Web(Node[][] nodes) {
-		this.nodes = nodes;
+	public Web(int rows, int columns) {		
+		nodes = map.createNodeMap(rows, columns);
+		router = new Router(nodes);
+		maxX = rows - 1;
+		maxY = columns - 1;
 		for (int y = 0; y<nodes.length;y++){
         	for (int x = 0; x < nodes[0].length;x++){  
         		Node selectedNode = nodes[y][x];
@@ -48,8 +50,7 @@ public class Web {
         		detailLevelNodes.add(selectedNode);        		
         	}
 		}
-		maxX = nodes.length - 1;
-		maxY = nodes[0].length - 1;
+		
 	}
 
 	private void conditionallyAddNode(Set<Integer> detailSet, Set<Integer> topSet, int currentX, int currentY, int string) {
@@ -99,13 +100,12 @@ public class Web {
 		List<Node> selection = detailNetworks.get(pickedDetailNetWork);
 		List<Node> selection2 = topLevelNetworks.get(pickedNetTopNetWork);
 		for(Node node: nodes) {		
-			node.setTransportType(transportTypeFactory.getType(transportTypeKey));
+			map.setTransportType(node.getX(), node.getY(), transportTypeKey);
 			node.setDetailNetworkKey(pickedDetailNetWork);
 			node.setTopNetworkKey(pickedNetTopNetWork);
 			selection.add(node);
 			selection2.add(node);
-		}	
-		
+		}		
 	}
 
 	private void addBasic(List<Node> nodes, int transportTypeKey) {
@@ -117,7 +117,7 @@ public class Web {
 			node.setTopNetworkKey(lastAssignedKey);
 			detailNode.add(node);
 			topNode.add(node);
-			node.setTransportType(transportTypeFactory.getType(transportTypeKey));
+			map.setTransportType(node.getX(), node.getY(), transportTypeKey);			
 		}			
 		detailNetworks.put(lastAssignedKey, detailNode);
 		topLevelNetworks.put(lastAssignedKey,topNode);		
@@ -155,6 +155,37 @@ public class Web {
 		}
 		return largestKey;		
 	}
+
+	public Node[][] getNodes() {		
+		return nodes;
+	}
+
+	public StockPile getStockPile() {		
+		return map.getStockPile()	;
+	}
+
+	public void switchTile(int fromX, int fromY, int string) {
+		map.switchTile(fromX, fromY, string);		
+	}
+
+	public void setSwitch(int x, int y, int switchKey) {
+		map.setSwitch(x, y, switchKey);		
+	}
+
+	public Map<String, TableRepresentation> getAllTableReps() {
+		return map.getAllTableReps();
+	}
+
+	public void buildTransportLine(int fromX, int fromY, int string, int toX, int toY) {
+		if(nodes[toX][toY].isPassable() && nodes[fromX][fromY].isPassable()) {
+		List<Node> nodes  = router.getRoute(fromX,fromY,toX,toY,0);			
+		if(nodes!=null) {
+			setTransportType(nodes, string);
+		}
+	}		
+	}
+
+
 
 
 	

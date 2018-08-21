@@ -51,11 +51,9 @@ public class Controller implements Observer {
 		} else {
 			List<String> input = StringUtilities.decomposeValueSeperatedString(update, '|');
 			if(input.get(0).equals("Clicked")&&!input.get(3).equals("Information")) {				
-//				world.switchTile(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),Integer.parseInt(input.get(3)),Integer.parseInt(input.get(4)), Integer.parseInt(input.get(5)));
-//				updateListeners(input);
+
 			}
-			else if(input.get(0).equals("Switch")) {
-				System.out.println("Switch");
+			else if(input.get(0).equals("Switch")) {				
 				world.addSwitch(Integer.parseInt(input.get(1)), Integer.parseInt(input.get(2)),Integer.parseInt(input.get(3)));
 			}
 			else if(input.get(0).equals("Transport")) {
@@ -66,8 +64,7 @@ public class Controller implements Observer {
 			}
 			else if(input.get(3).equals("Information")){				
 				updateListeners(input);
-			}
-			
+			}			
 		}
 	}
 	
@@ -76,54 +73,12 @@ public class Controller implements Observer {
 			listener.update(args,this);
 		}		
 	}
-
-	public List<String> getResourceColumns(){
-		return world.getResourceColumns();
+	
+	public TableRepresentation getStockTable() {
+		return world.getStockTable();
 	}
 	
-	public Object[][] getResources(){
-		return world.getResources(); 
+	public Map<String, TableRepresentation> getAllTableReps(){
+		return world.getAllTableReps();
 	}
-
-	public List<String> getStockColumns() {		
-		return world.getStockColumns();
-	}
-	
-	public Object[][] getStocks() {
-		return world.getStocks();
-	}
-
-	public List<String> getManufactorerColumns() {		
-		return world.getManufactoryColumns();
-	}
-	
-	public Object[][] getManufacturer() {
-		return world.getManufacturers();
-	}
-	
-	public List<String> getTransportColumns() {		
-		return world.getTransportColumns();
-	}
-	
-	public Object[][] getTransportTypes() {
-		return world.getTransportTypes();
-	}
-	
-	public List<String> getTileColumns() {		
-		return world.getTileColumns();
-	}
-	
-	public Object[][] getTiles() {
-		return world.getTiles();
-	}
-	
-	public List<String> getSwitchColumns() {		
-		return world.getSwitchColumns();
-	}
-	
-	public Object[][] getSwitches() {
-		return world.getSwitches();
-	}
-
-
 }

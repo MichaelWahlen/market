@@ -104,4 +104,5 @@ public class Manufacturer implements Producer, StaticData {
 		}			
 		return manufacturer;
 	}
+
 }

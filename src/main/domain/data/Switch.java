@@ -2,7 +2,6 @@ package main.domain.data;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import main.utilities.StringUtilities;
 
 public class Switch implements StaticData {
@@ -66,6 +65,8 @@ public class Switch implements StaticData {
 		localSwitch.setConnectorB(FactoryHolder.getGenericFactory(Transport.class).getType(Integer.parseInt(moreString.get(3))));
 		return localSwitch;
 	}
+
+
 
 		
 	

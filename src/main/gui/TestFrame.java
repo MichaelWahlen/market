@@ -5,6 +5,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 
@@ -170,19 +172,20 @@ public class TestFrame extends JFrame implements Listener {
 	 * @param controller 
 	 */ 
 	private void initElements(Controller controller) {				
-		genericTable(optionsPanel,resourceOverview,controller.getResources(), controller.getResourceColumns());
-		genericTable(optionsPanel,supplyOverview,controller.getStocks(), controller.getStockColumns());
-		genericTable(optionsPanel,producerOverview,controller.getManufacturer(), controller.getManufactorerColumns());
-		genericTable(optionsPanel,transportOverview,controller.getTransportTypes(), controller.getTransportColumns());
-		genericTable(optionsPanel,tileOverview,controller.getTiles(), controller.getTileColumns());
-		genericTable(optionsPanel,switchOverview,controller.getSwitches(), controller.getSwitchColumns());
+		Map<String, TableRepresentation> reps = controller.getAllTableReps();
+		genericTable(optionsPanel,resourceOverview,reps.get("Resource"));
+		genericTable(optionsPanel,supplyOverview,controller.getStockTable());
+		genericTable(optionsPanel,producerOverview,reps.get("Manufacturer"));
+		genericTable(optionsPanel,transportOverview,reps.get("Transport"));
+		genericTable(optionsPanel,tileOverview,reps.get("Tile"));
+		genericTable(optionsPanel,switchOverview,reps.get("Switch"));
 		optionsPanel.setBounds(1200,50,700,900);
 		add(optionsPanel);
 	}
 
-	private void genericTable(JPanel optionsPanel2, JTable table, Object[][] objects, List<String> list) {		
+	private void genericTable(JPanel optionsPanel2, JTable table, TableRepresentation tableRep) {		
 		JScrollPane scrollPane = new JScrollPane(table);		
-		table.setModel(new CustomTableModel(objects, list));
+		table.setModel(new CustomTableModel(tableRep.getObjectRepresentation(), tableRep.getColumnNames()));
 		table.setRowSelectionInterval(0, 0);
 		optionsPanel2.add(scrollPane);
 	}
@@ -226,7 +229,7 @@ public class TestFrame extends JFrame implements Listener {
 		@Override
 		public void run() {
 			if(message.get(0).equals("Simulate")) {
-				supplyOverview.setModel(new CustomTableModel(controller.getStocks(), controller.getStockColumns()));
+				supplyOverview.setModel(new CustomTableModel(controller.getStockTable().getObjectRepresentation(), controller.getStockTable().getColumnNames()));
 			} else if(message.get(0).equals("Clicked")&&!message.get(3).equals("Information")) {
 				setDisplayImage(controller.getNodes());
 			} else if(message.get(3).equals("Information")) {
