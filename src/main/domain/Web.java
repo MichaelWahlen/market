@@ -15,8 +15,7 @@ public class Web {
 	private Node[][] nodes;
 	private Router router;
 	private Map<Integer,List<Node>> topLevelNetworks = new HashMap<Integer, List<Node>>();
-	private Map<Integer,List<Node>> detailNetworks = new HashMap<Integer, List<Node>>();
-	
+	private Map<Integer,List<Node>> detailNetworks = new HashMap<Integer, List<Node>>();	
 	private int lastAssignedKey = 0;
 	private int maxX;
 	private int maxY;
@@ -178,11 +177,11 @@ public class Web {
 
 	public void buildTransportLine(int fromX, int fromY, int string, int toX, int toY) {
 		if(nodes[toX][toY].isPassable() && nodes[fromX][fromY].isPassable()) {
-		List<Node> nodes  = router.getRoute(fromX,fromY,toX,toY,0);			
-		if(nodes!=null) {
-			setTransportType(nodes, string);
-		}
-	}		
+			List<Node> nodes  = router.getRoute(fromX,fromY,toX,toY,0);			
+			if(nodes!=null) {
+				setTransportType(nodes, string);
+			}
+		}		
 	}
 
 

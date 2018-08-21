@@ -3,11 +3,10 @@ package main.domain.data;
 import java.util.ArrayList;
 import java.util.List;
 import main.domain.GenerateableResource;
-import main.domain.Producer;
 import main.domain.StockPile;
 import main.utilities.StringUtilities;
 
-public class Manufacturer implements Producer, StaticData {
+public class Manufacturer implements StaticData {
 
 	private StockPile localStockPile;
 	private List<GenerateableResource> manufacturedResources = new ArrayList<GenerateableResource>();

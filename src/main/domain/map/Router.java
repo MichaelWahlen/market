@@ -6,18 +6,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
-
 import main.domain.Node;
 
+/**
+ * Class used to get shortest route from point A to point B
+ */
 public class Router {
 	
 	private Node[][] nodes;
 	private int maxX;
 	private int maxY;
-	private int targetX;
-	private int targetY;
-	private Set<Node> nodesToBeReset;
-	private PriorityQueue<Node> openQueue;
+	private NodeComperator nodeComperator = new NodeComperator();
+	private Heuristic manhattan = new Manhattan();
+	
+	/**
+	 * @param nodes node array of arrays, nodes need to have a lot of information to allow route planning. Relative weight of the element, travelled distance, projected distances, etc, etc, this needs to be changed :(
+	 */
 	
 	public Router(Node[][] nodes) {
 		this.nodes = nodes;
@@ -25,56 +29,51 @@ public class Router {
 		maxY = nodes[0].length - 1;		
 	}
 	
-	public List<Node> getRoute(int fromX, int fromY, int toX, int toY, int detailNetwork){
-		
-		if(fromX==toX&&fromY==toY) {
+	public List<Node> getRoute(int fromX, int fromY, int toX, int toY, int detailNetwork){		
+		List<Node>  returnList = null;
+		Node currentNode = nodes[fromX][fromY];	
+		Set<Node> nodesToBeReset = new HashSet<Node>();
+		PriorityQueue<Node> openQueue = new PriorityQueue<>(1,nodeComperator);
+		manhattan.setTarget(toX, toY);	
+		if(fromX==toX && fromY==toY) {
 			List<Node> nodes = new ArrayList<Node>();
-			nodes.add(this.nodes[fromX][fromY]);
+			nodes.add(currentNode);
 			return nodes;			
-		}		
-		
-		nodesToBeReset = new HashSet<Node>();
-		List<Node> returnList = null;
-		targetX = toX;
-		targetY = toY;
-		NodeComperator myComp = new NodeComperator();
-		openQueue = new PriorityQueue<>(1,myComp);
-		Node initialNode = nodes[fromX][fromY];
-		initialNode.setTravelledDistance(0);		
-		nodesToBeReset.add(initialNode);
-		Node nextNode = initialNode;
-		boolean targetNotFound = true;		
-		while(targetNotFound) {		
-			List<Node> neighbours = getNeighbours(nextNode.getX(),nextNode.getY());			
-			for(Node node: neighbours) {			
-				openQueue.add(node);
-				if(node.getX()==toX&&node.getY()==toY) {
-					targetNotFound = false;
-					returnList = generateRoute(node.getX(),node.getY());
+		}				
+		currentNode.setTravelledDistance(0);			
+		nodesToBeReset.add(currentNode);
+		boolean targetFound = false;
+		while(!targetFound) {		
+			List<Node> neighbours = getNeighbours(currentNode);	
+			nodesToBeReset.addAll(neighbours);
+			for(Node node: neighbours) {								
+				if(node.getX()==toX&&node.getY()==toY) {					
+					targetFound= true;
+					returnList = generateRoute(node);					
 				}
-				nodesToBeReset.add(node);
+				openQueue.add(node);				
 			}
 			if(openQueue.isEmpty()) {
 				break;
 			}
-			nextNode = openQueue.remove();			
+			currentNode = openQueue.remove();			
 		}
 		resetNodes(nodesToBeReset);	
 		return returnList;
 	}
 	
-	private List<Node> generateRoute(int x, int y) {
+	private List<Node> generateRoute(Node node) {
 		List<Node> returnList = new ArrayList<Node>();
-		addNode(returnList,x,y);
+		addNode(returnList,node);
 		Collections.reverse(returnList);
 		return returnList;
 	}
 
-	private void addNode(List<Node> returnList, int x, int y) {
-		returnList.add(nodes[x][y]);
-		Node parent = nodes[x][y].getParentNode();
+	private void addNode(List<Node> returnList,Node node) {
+		returnList.add(node);
+		Node parent = node.getParentNode();
 		if(parent!=null) {
-			addNode(returnList,parent.getX(),parent.getY());
+			addNode(returnList,parent);
 		}		
 	}
 
@@ -83,48 +82,40 @@ public class Router {
 			node.setTravelledDistance(Integer.MAX_VALUE);
 			node.setHeuristicDistance(Integer.MAX_VALUE);
 			node.setParentNode(null);
-		}		
+		}	
+		nodesToBeReset.clear();
 	}
 
-	private List<Node> getNeighbours(int fromX, int fromY) {
-		List<Node> tempHolder = new ArrayList<Node>();
-		int travelledDistance = nodes[fromX][fromY].getTravelledDistance();
-		if(fromX>0) {			
-			tempHolder.add(getOpenNode(fromX-1,fromY,travelledDistance));
+	private List<Node> getNeighbours(Node originalNode) {
+		List<Node> neightbourNodes = new ArrayList<Node>();
+		int x = originalNode.getX();
+		int y = originalNode.getY();		
+		if(x>0) {			
+			addOpenNode(neightbourNodes,nodes[x-1][y],originalNode);				
 		};
-		if(fromY>0) {
-			tempHolder.add(getOpenNode(fromX,fromY-1,travelledDistance));
+		if(y>0) {			
+			addOpenNode(neightbourNodes,nodes[x][y-1],originalNode);			
 		};
-		if(fromX<maxX) {
-			tempHolder.add(getOpenNode(fromX+1,fromY,travelledDistance));
+		if(x<maxX) {			
+			addOpenNode(neightbourNodes,nodes[x+1][y],originalNode);			
 		};
-		if(fromY<maxY) {
-			tempHolder.add(getOpenNode(fromX,fromY+1,travelledDistance));
-		};	
-		List<Node> realReturn = new ArrayList<Node>();
-		for(Node node: tempHolder) {
-			if (node!=null) {
-				node.setParentNode(nodes[fromX][fromY]);
-				node.setHeuristicDistance(getHeuristic(node.getX(),node.getY()));
-				realReturn.add(node);
-			}
+		if(y<maxY) {			
+			addOpenNode(neightbourNodes,nodes[x][y+1],originalNode);			
+		};			
+		return neightbourNodes;
+	}
+	
+	private void addOpenNode(List<Node> list,Node node, Node parent) {		
+		int travelDistanceToThisNode = node.getWeight() + parent.getTravelledDistance();
+		if(node!=null && node.isPassable() && node.getTransportType().getCode()==99 && node.getTravelledDistance()>travelDistanceToThisNode) {
+			node.setTravelledDistance(travelDistanceToThisNode);
+			node.setHeuristicDistance(manhattan.getHeuristicValue(node.getX(), node.getY()));
+			node.setParentNode(parent);
+			list.add(node);			
 		}		
-		return realReturn;
 	}
 	
-	private Node getOpenNode(int toX, int toY, int travelledDistance) {		
-		Node nodeToAdd = nodes[toX][toY];
-		int travelWeightCurrentNode = nodeToAdd.getWeight();
-		if(nodeToAdd.isPassable() && nodeToAdd.getTransportType().getCode()==99&&nodeToAdd.getTravelledDistance()>travelledDistance + travelWeightCurrentNode) {
-			nodeToAdd.setTravelledDistance(travelledDistance + travelWeightCurrentNode);
-			return nodeToAdd;
-		}
-		return null;
-	}
-	
-	private int getHeuristic(int toX, int toY) {
-		return Math.abs(toX-targetX)+2*Math.abs(toY-targetY);
-	}
+
 	
 	
 }
