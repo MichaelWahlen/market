@@ -35,8 +35,8 @@ public class LocalMap {
 				Node node = new Node();	
 				node.setX(i);
 				node.setY(j);
-				node.setTravelledDistance(Integer.MAX_VALUE);
-				node.setHeuristicDistance(Integer.MAX_VALUE);
+//				node.setTravelledDistance(Integer.MAX_VALUE);
+//				node.setHeuristicDistance(Integer.MAX_VALUE);
 				if(pick<=3) {
 					node.setAboveGroundResource(resourceFactory.getType(3));
 					node.setTile(tileFactory.getType(2));					

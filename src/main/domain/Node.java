@@ -12,13 +12,10 @@ public class Node {
 	private int detailNetworkKey = 0;
 	private int topNetworkKey = 0;
 	private GenerateableResource aboveGroundResource;
-	private Transport transportType;
+	private Transport containedTransports;
 	private Tile tile;
-	private Node parentNode;	
 	private int x;
 	private int y;
-	private int travelledDistance = 0;
-	private int heuristicDistance = 0;
 	private Switch localSwitch;
 	
 	public List<String> getStatus(){
@@ -26,7 +23,7 @@ public class Node {
 		overviewList.add("Detail network key: "+detailNetworkKey);
 		overviewList.add("Top network key: "+topNetworkKey);
 		overviewList.add("Above ground resource: "+aboveGroundResource.getName());
-		overviewList.add("Transport type: "+transportType.getName());
+		overviewList.add("Transport type: "+containedTransports.getName());
 		overviewList.add("Tile name: "+tile.getName());
 		overviewList.add("Tile weight: "+ tile.getWeight());
 		overviewList.add("X coord: "+x);
@@ -38,14 +35,10 @@ public class Node {
 	}
 	
 	public boolean isVacant() {
-		if(isPassable() && transportType.getCode()==99 && localSwitch == null) {
+		if(isPassable() && containedTransports.getCode()==99 && localSwitch == null) {
 			return true;
 		}
 		return false;
-	}
-	
-	public int getTotalDistanceToGoal() {
-		return travelledDistance+heuristicDistance;
 	}
 	
 	public void setSwitch(Switch localSwitch) {
@@ -77,11 +70,11 @@ public class Node {
 	}
 
 	public Transport getTransportType() {
-		return transportType;
+		return containedTransports;
 	}
 
 	public void setTransportType(Transport transportType) {
-		this.transportType = transportType;
+		this.containedTransports = transportType;
 	}
 
 	public void setTile(Tile tile) {
@@ -100,14 +93,6 @@ public class Node {
 		return tile.isPassable();
 	}
 
-	public Node getParentNode() {
-		return parentNode;
-	}
-
-	public void setParentNode(Node parentNode) {
-		this.parentNode = parentNode;
-	}
-
 	public int getX() {
 		return x;
 	}
@@ -124,26 +109,8 @@ public class Node {
 		this.y = y;
 	}
 
-	public int getTravelledDistance() {
-		return travelledDistance;
-	}
-
-	public void setTravelledDistance(int travelledDistance) {
-		this.travelledDistance = travelledDistance;
-	}
-
 	public Tile getTile() {
 		return tile;
 	}
-
-	public int getHeuristicDistance() {
-		return heuristicDistance;
-	}
-
-	public void setHeuristicDistance(int heuristicDistance) {
-		this.heuristicDistance = heuristicDistance;
-	}
-	
-
 	
 }
