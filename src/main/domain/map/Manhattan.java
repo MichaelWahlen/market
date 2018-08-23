@@ -6,7 +6,7 @@ public class Manhattan implements Heuristic {
 	private int targetY;
 	
 	@Override
-	public void setTarget(int x, int y) {
+	public void setDestination(int x, int y) {
 		targetX = x;
 		targetY = y;
 	}

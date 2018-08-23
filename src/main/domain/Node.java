@@ -1,10 +1,12 @@
 package main.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import main.domain.data.Switch;
-import main.domain.data.Tile;
+import main.domain.data.Terrain;
 import main.domain.data.Transport;
 
 public class Node {
@@ -12,33 +14,32 @@ public class Node {
 	private int detailNetworkKey = 0;
 	private int topNetworkKey = 0;
 	private GenerateableResource aboveGroundResource;
-	private Transport containedTransports;
-	private Tile tile;
+	private Map<Integer, Transport> containedTransports = new HashMap<Integer, Transport>();
+	private Terrain terrain;
 	private int x;
 	private int y;
 	private Switch localSwitch;
+	private int Slope = 0;
+	private boolean isFull = false;
 	
 	public List<String> getStatus(){
 		List<String> overviewList = new ArrayList<String>();
 		overviewList.add("Detail network key: "+detailNetworkKey);
 		overviewList.add("Top network key: "+topNetworkKey);
 		overviewList.add("Above ground resource: "+aboveGroundResource.getName());
-		overviewList.add("Transport type: "+containedTransports.getName());
-		overviewList.add("Tile name: "+tile.getName());
-		overviewList.add("Tile weight: "+ tile.getWeight());
+		String transportNames = "";
+		for(Transport transport:containedTransports.values()) {
+			transportNames = transportNames + " "+transport.getName();
+		}
+		overviewList.add("Transport type: "+transportNames);
+		overviewList.add("Tile name: "+terrain.getName());
+		overviewList.add("Tile weight: "+ terrain.getWeight());
 		overviewList.add("X coord: "+x);
 		overviewList.add("Y coord: "+y);
 		if(localSwitch!=null) {
 			overviewList.add("Switch: "+localSwitch.getName());
 		}
 		return overviewList;
-	}
-	
-	public boolean isVacant() {
-		if(isPassable() && containedTransports.getCode()==99 && localSwitch == null) {
-			return true;
-		}
-		return false;
 	}
 	
 	public void setSwitch(Switch localSwitch) {
@@ -69,28 +70,24 @@ public class Node {
 		this.aboveGroundResource = generateableResource;
 	}
 
-	public Transport getTransportType() {
+	public Map<Integer,Transport> getTransportType() {
 		return containedTransports;
 	}
 
-	public void setTransportType(Transport transportType) {
-		this.containedTransports = transportType;
+	public void addTransport(Transport transportType) {
+		containedTransports.put(transportType.getCode(),transportType);
 	}
 
-	public void setTile(Tile tile) {
-		this.tile = tile;
+	public void setTerrain(Terrain tile) {
+		this.terrain = tile;
 	}
 	
 	public int getTileCode() {
-		return tile.getCode();
+		return terrain.getCode();
 	}
 	
 	public int getWeight() {
-		return tile.getWeight();
-	}
-	
-	public boolean isPassable() {
-		return tile.isPassable();
+		return terrain.getWeight();
 	}
 
 	public int getX() {
@@ -109,8 +106,24 @@ public class Node {
 		this.y = y;
 	}
 
-	public Tile getTile() {
-		return tile;
+	public Terrain getTile() {
+		return terrain;
+	}
+
+	public int getSlope() {
+		return Slope;
+	}
+
+	public void setSlope(int slope) {
+		Slope = slope;
+	}
+
+	public boolean isFull() {
+		return isFull;
+	}
+
+	public void setFull(boolean isFull) {
+		this.isFull = isFull;
 	}
 	
 }

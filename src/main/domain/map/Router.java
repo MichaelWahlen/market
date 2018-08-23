@@ -1,5 +1,6 @@
 package main.domain.map;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,18 +8,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
-import main.domain.Node;
 
 /**
  * Class used to get shortest route from point A to point B
  */
 public class Router {
-	
-	private Node[][] nodes;
-	private int maxX;
-	private int maxY;	
-	private Heuristic manhattan = new Manhattan();
-	private InnerNode[][] travelMap;	
 	
 	private class InnerNode {
 		
@@ -76,33 +70,48 @@ public class Router {
 	    }
 	}
 
+	private InnerNode[][] travelMap;	
+	private Compass compass;
 	
 	/**
-	 * Create a inner class,give it heuristic distance/travelled distance etc etc, move all creation thereof here... new compartor etc also neccesary
-	 * @param nodes node array of arrays, nodes need to have a lot of information to allow route planning. Relative weight of the element, travelled distance, projected distances, etc, etc, this needs to be changed :(
+	 * @param compass a compass that gives information about the object that needs to be travelled. Minimal information is required: x bound, y bound, whether a move is possible and the cost of said move. This is all pushed to the compass.
 	 */
 	
-	public Router(Node[][] nodes) {
-		this.nodes = nodes;
-		maxX = nodes.length - 1;
-		maxY = nodes[0].length - 1;	
-		travelMap = new InnerNode[maxX+1][maxY+1];
-		for(int i = 0; i <= maxX;i++) {
-			for(int j = 0 ; j <= maxY;j++) {
+	public Router(Compass compass) {		
+		this.compass = compass;		
+		this.travelMap = getTravelMap(compass.getXBoundary(),compass.getYBoundary());
+	}	
+	
+	public List<Point> getRoute(int fromX, int fromY, int toX, int toY, int topNetWork){		
+		List<InnerNode> test  = getInnerRoute(fromX,fromY,toX,toY,topNetWork);
+		List<Point> holderTest = new ArrayList<Point>();
+		if(test!=null) {
+			for(InnerNode innerNode:test) {
+				holderTest.add(new Point(innerNode.getX(),innerNode.getY()));
+			}
+		}		
+		return holderTest;
+	}	
+	
+	private InnerNode[][] getTravelMap(int x, int y){
+		InnerNode[][] returnTravel = new InnerNode[x+1][y+1];
+		for(int i = 0; i <= x;i++) {
+			for(int j = 0 ; j <= y;j++) {
 				InnerNode innerNode = new InnerNode();
 				innerNode.setX(i);
 				innerNode.setY(j);
-				travelMap[i][j] = innerNode;				
+				returnTravel[i][j] = innerNode;				
 			}
-		}		
+		}
+		return returnTravel;
 	}
 	
-	public List<InnerNode> getInnerRoute(int fromX, int fromY, int toX, int toY, int detailNetwork){		
+	private List<InnerNode> getInnerRoute(int fromX, int fromY, int toX, int toY, int detailNetwork){		
 		List<InnerNode>  returnList = null;
-		InnerNode currentInnerNode = travelMap[fromX][fromY];
+		InnerNode currentInnerNode = getInnerNode(fromX, fromY);
 		Set<InnerNode> innerNodesToReset = new HashSet<InnerNode>();
 		PriorityQueue<InnerNode> openInnerQueue = new PriorityQueue<>(1,new InnerComperator());
-		manhattan.setTarget(toX, toY);	
+		setDestination(toX, toY);	
 		if(fromX==toX && fromY==toY) {
 			List<InnerNode> innerNodes = new ArrayList<InnerNode>();
 			innerNodes.add(currentInnerNode);
@@ -114,12 +123,12 @@ public class Router {
 		while(!targetFound) {		
 			List<InnerNode> neighbours = getNeighbours(currentInnerNode);	
 			innerNodesToReset.addAll(neighbours);
-			for(InnerNode node: neighbours) {								
-				if(node.getX()==toX&&node.getY()==toY) {					
+			for(InnerNode innerNode: neighbours) {								
+				if(innerNode.getX()==toX&&innerNode.getY()==toY) {					
 					targetFound= true;
-					returnList = generateRoute(node);					
+					returnList = generateRoute(innerNode);					
 				}
-				openInnerQueue.add(node);				
+				openInnerQueue.add(innerNode);				
 			}
 			if(openInnerQueue.isEmpty()) {
 				break;
@@ -129,8 +138,7 @@ public class Router {
 		resetInnerNodes(innerNodesToReset);	
 		return returnList;
 	}
-	
-	
+
 	private void resetInnerNodes(Set<InnerNode> innerNodesToReset) {
 		for(InnerNode innerNode:innerNodesToReset) {
 			innerNode.setTravelledDistance(Integer.MAX_VALUE);
@@ -160,42 +168,58 @@ public class Router {
 		int x = currentInnerNode.getX();
 		int y = currentInnerNode.getY();		
 		if(x>0) {			
-			addInnerNode(neightbourNodes,nodes[x-1][y],currentInnerNode,travelMap[x-1][y]);				
+			addInnerNode(neightbourNodes,x-1,y,currentInnerNode);				
 		};
 		if(y>0) {			
-			addInnerNode(neightbourNodes,nodes[x][y-1],currentInnerNode,travelMap[x][y-1]);			
+			addInnerNode(neightbourNodes,x,y-1,currentInnerNode);			
 		};
-		if(x<maxX) {			
-			addInnerNode(neightbourNodes,nodes[x+1][y],currentInnerNode,travelMap[x+1][y]);			
+		if(x<getXBoundary()) {			
+			addInnerNode(neightbourNodes,x+1,y,currentInnerNode);			
 		};
-		if(y<maxY) {			
-			addInnerNode(neightbourNodes,nodes[x][y+1],currentInnerNode,travelMap[x][y+1]);			
+		if(y<getYBoundary()) {			
+			addInnerNode(neightbourNodes,x,y+1,currentInnerNode);			
 		};			
 		return neightbourNodes;
-	}	
+	}
 	
-	private void addInnerNode(List<InnerNode> currentNeighbours, Node potentialNeighbourNode, InnerNode currentInnerNode, InnerNode potentialInnerNeighbour) {
-		int travelDistanceToThisNode = potentialNeighbourNode.getWeight() + currentInnerNode.getTravelledDistance();
-		if(potentialNeighbourNode.isPassable() && potentialInnerNeighbour.getTravelledDistance()>travelDistanceToThisNode) {
-			potentialInnerNeighbour.setTravelledDistance(travelDistanceToThisNode);
-			potentialInnerNeighbour.setEstimatedDistanceToTarget(manhattan.getHeuristicValue(potentialNeighbourNode.getX(), potentialNeighbourNode.getY()));
-			potentialInnerNeighbour.setParentNode(currentInnerNode);
-			currentNeighbours.add(potentialInnerNeighbour);			
+	private void addInnerNode(List<InnerNode> neighbours, int x, int y, InnerNode startNode) {
+		int travelDistanceToThisNode = getTraverseWeight(x,y) + startNode.getTravelledDistance();
+		InnerNode neighbour = getInnerNode(x,y);
+		if(isMovePossible(x, y) && neighbour.getTravelledDistance()>travelDistanceToThisNode) {
+			neighbour.setTravelledDistance(travelDistanceToThisNode);
+			neighbour.setEstimatedDistanceToTarget(getHeuristicEstimation(x, y));
+			neighbour.setParentNode(startNode);
+			neighbours.add(neighbour);			
 		}		
+	}
+	
+	private int getHeuristicEstimation(int x, int y) {		
+		return compass.getHeuristicEstimation(x, y);
 	}
 
-	//------------ Old
-	public List<Node> getRoute(int fromX, int fromY, int toX, int toY, int detailNetwork){		
-		List<InnerNode> test  = getInnerRoute(fromX,fromY,toX,toY,detailNetwork);
-		List<Node> holderTest = new ArrayList<Node>();
-		if(test!=null) {
-			for(InnerNode innerNode:test) {
-				holderTest.add(nodes[innerNode.getX()][innerNode.getY()]);
-			}
-		}		
-		return holderTest;
+	private boolean isMovePossible(int x, int y) {
+		return compass.isMovePossible(x, y);
+	}
+
+	private int getTraverseWeight(int x,int y) {
+		return compass.getTraverseWeight(x, y);
 	}
 	
+	private void setDestination(int toX, int toY) {
+		compass.setDestination(toX, toY);		
+	}
+	
+	private int getYBoundary() {		
+		return compass.getYBoundary();
+	}
+
+	private int getXBoundary() {		
+		return compass.getXBoundary();
+	}
+	
+	private InnerNode getInnerNode(int x, int y) {
+		return travelMap[x][y];
+	}
 
 
 	

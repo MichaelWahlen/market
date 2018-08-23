@@ -7,7 +7,7 @@ public class FactoryHolder {
 
 	private static final GenericFactory<Transport> transportFactory = new GenericFactory<Transport>(Transport.class);
 	private static final GenericFactory<Switch> switchFactory = new GenericFactory<Switch>(Switch.class);;	
-	private static final GenericFactory<Tile> tileFactory = new GenericFactory<Tile>(Tile.class);	
+	private static final GenericFactory<Terrain> terrainFactory = new GenericFactory<Terrain>(Terrain.class);	
 	private static final GenericFactory<Resource> resourceFactory = new GenericFactory<Resource>(Resource.class);
 	private static final GenericFactory<Manufacturer> manufacturerFactory = new GenericFactory<Manufacturer>(Manufacturer.class);
 	
@@ -22,15 +22,13 @@ public class FactoryHolder {
 		if(classref.getSimpleName().equals("Switch")) {
 			return (GenericFactory<T>) switchFactory;
 		}
-		if(classref.getSimpleName().equals("Tile")) {
-			return (GenericFactory<T>) tileFactory;
+		if(classref.getSimpleName().equals("Terrain")) {
+			return (GenericFactory<T>) terrainFactory;
 		}
 		if(classref.getSimpleName().equals("Resource")) {
 			return (GenericFactory<T>) resourceFactory;
 		}
 		return null;		
 	}
-	
-
 	
 }

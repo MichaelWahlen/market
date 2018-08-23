@@ -5,11 +5,10 @@ import java.util.List;
 
 import main.utilities.StringUtilities;
 
-public class Tile implements StaticData{
+public class Terrain implements StaticData{
 	private int code;
 	private String name;
-	private int weight;
-	private boolean passable;
+	private int traverseCost;
 	
 	public int getCode() {
 		return code;
@@ -25,34 +24,27 @@ public class Tile implements StaticData{
 	}
 	
 	public int getWeight() {
-		return weight;
+		return traverseCost;
 	}
 	public void setWeight(int weight) {
-		this.weight = weight;
+		this.traverseCost = weight;
 	}
-	public boolean isPassable() {
-		return passable;
-	}
-	public void setPassable(boolean passable) {
-		this.passable = passable;
-	}
+
 	@Override
 	public List<String> getDetailsInOrder() {
 		List<String> returns = new ArrayList<String>();
 		returns.add(""+code);
 		returns.add(name);
-		returns.add(""+weight);
-		returns.add(""+passable);
+		returns.add(""+traverseCost);	
 		return returns;
 	}
 	@Override
 	public StaticData get(String string) {
 		List<String> moreString = StringUtilities.decomposeValueSeperatedString(string, '|');
-		Tile tile = new Tile();
+		Terrain tile = new Terrain();
 		tile.setCode(Integer.parseInt(moreString.get(0)));
 		tile.setName(moreString.get(1));
-		tile.setWeight(Integer.parseInt(moreString.get(2)));
-		tile.setPassable(Boolean.parseBoolean(moreString.get(3)));
+		tile.setWeight(Integer.parseInt(moreString.get(2)));	
 		return tile;
 	}
 	

@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 
 import main.domain.Node;
+import main.domain.data.Transport;
 
 
 public class TestFrame extends JFrame implements Listener {
@@ -147,7 +148,13 @@ public class TestFrame extends JFrame implements Listener {
     	        g.setColor(Color.BLACK);
     	        g.setFont(new Font("TimesRoman", Font.PLAIN, 10)); 
     	        g.drawString(""+value[y][x].getTileCode(), 5+x*50, y*50+13);
-    	        g.drawString(value[y][x].getTransportType().getName(), 5+x*50, y*50+23);
+    	        
+    	        String transportString = "";
+    	        Map<Integer, Transport> transports = value[y][x].getTransportType();
+    	        for(Transport transport: transports.values()) {
+    	        	transportString = transportString + ";"+transport.getCode();
+    	        }    	        
+    	        g.drawString(transportString, 5+x*50, y*50+23);
     	        g.drawString(value[y][x].getTopNetworkKey()+","+value[y][x].getDetailNetworkKey(), 5+x*50, y*50+33);	
         	}
         }

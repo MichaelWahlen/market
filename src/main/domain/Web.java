@@ -1,12 +1,17 @@
 package main.domain;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import main.domain.data.Transport;
 import main.domain.map.LocalMap;
+import main.domain.map.Manhattan;
+import main.domain.map.NodeCompass;
 import main.domain.map.Router;
 import main.gui.TableRepresentation;
 
@@ -21,9 +26,11 @@ public class Web {
 	private int maxY;
 	private LocalMap map = new LocalMap();	
 	
+	// doesnt work with different types of transport yet. Needs to be fixed. Will currently merge networks without switches purely based on the fact that they are connected. But RR and R should not create a single network.
+	
 	public Web(int rows, int columns) {		
 		nodes = map.createNodeMap(rows, columns);
-		router = new Router(nodes);
+		router = new Router(new NodeCompass(nodes, new Manhattan()));
 		maxX = rows - 1;
 		maxY = columns - 1;
 		for (int y = 0; y<nodes.length;y++){
@@ -52,9 +59,17 @@ public class Web {
 		
 	}
 
-	private void conditionallyAddNode(Set<Integer> detailSet, Set<Integer> topSet, int currentX, int currentY, int string) {
+	private void conditionallyAddNode(Set<Integer> detailSet, Set<Integer> topSet, int currentX, int currentY, int transportKey) {
 		Node abc = this.nodes[currentX][currentY];
-		if(abc.getTransportType().getCode()==string) {
+		Map<Integer,Transport> transports = abc.getTransportType();
+		boolean hasTransportType = false;
+		for(Transport transport: transports.values()) {
+			if(transport.getCode() == transportKey) {
+				hasTransportType = true;
+				break;
+			}
+		}
+		if(hasTransportType) {
 			detailSet.add(abc.getDetailNetworkKey());
 			topSet.add(abc.getTopNetworkKey());
 		}		
@@ -78,6 +93,7 @@ public class Web {
 			if(currentY<maxY) {
 				conditionallyAddNode(detailSet,topSet,currentX,currentY+1,transportTypeKey);	
 			}
+			
 			if(currentY>0) {
 				conditionallyAddNode(detailSet,topSet,currentX,currentY-1,transportTypeKey);	
 			}
@@ -176,11 +192,15 @@ public class Web {
 	}
 
 	public void buildTransportLine(int fromX, int fromY, int string, int toX, int toY) {
-		if(nodes[toX][toY].isPassable() && nodes[fromX][fromY].isPassable()) {
-			List<Node> nodes  = router.getRoute(fromX,fromY,toX,toY,0);			
-			if(nodes!=null) {
+		if(!nodes[toX][toY].isFull() && !nodes[fromX][fromY].isFull()) {
+			List<Point> points = router.getRoute(fromX,fromY,toX,toY,0);	
+			if(points!=null) {
+				List<Node> nodes  = new ArrayList<Node>();				
+				for(Point point:points) {
+					nodes.add(this.nodes[point.x][point.y]);
+				}
 				setTransportType(nodes, string);
-			}
+			}			
 		}		
 	}
 
