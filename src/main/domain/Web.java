@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import main.domain.data.Transport;
+import main.domain.map.Compass;
 import main.domain.map.LocalMap;
 import main.domain.map.Manhattan;
 import main.domain.map.NodeCompass;
@@ -22,57 +23,32 @@ public class Web {
 	private Map<Integer,List<Node>> topLevelNetworks = new HashMap<Integer, List<Node>>();
 	private Map<Integer,List<Node>> detailNetworks = new HashMap<Integer, List<Node>>();	
 	private int lastAssignedKey = 0;
-	private int maxX;
-	private int maxY;
-	private LocalMap map = new LocalMap();	
+	private LocalMap map = new LocalMap();
+	private Compass compass;
 	
 	// doesnt work with different types of transport yet. Needs to be fixed. Will currently merge networks without switches purely based on the fact that they are connected. But RR and R should not create a single network.
 	
 	public Web(int rows, int columns) {		
 		nodes = map.createNodeMap(rows, columns);
-		router = new Router(new NodeCompass(nodes, new Manhattan()));
-		maxX = rows - 1;
-		maxY = columns - 1;
-		for (int y = 0; y<nodes.length;y++){
-        	for (int x = 0; x < nodes[0].length;x++){  
-        		Node selectedNode = nodes[y][x];
-        		int assignedTop = selectedNode.getTopNetworkKey();
-        		int assignedDetail = selectedNode.getDetailNetworkKey();
-        		if(assignedTop>lastAssignedKey) {
-        			lastAssignedKey = assignedTop;
-        		}
-        		if(assignedDetail>lastAssignedKey) {
-        			lastAssignedKey = assignedDetail;
-        		}
-        		List<Node> topLevelNodes = topLevelNetworks.get(assignedTop);
-        		if(topLevelNodes == null) {
-        			topLevelNodes = new ArrayList<Node>();        			
-        		}
-        		topLevelNodes.add(selectedNode);
-        		List<Node> detailLevelNodes = detailNetworks.get(assignedDetail);
-        		if(detailLevelNodes == null) {
-        			detailLevelNodes = new ArrayList<Node>();        			
-        		}
-        		detailLevelNodes.add(selectedNode);        		
-        	}
-		}
-		
+		compass = new NodeCompass(nodes, new Manhattan());
+		router = new Router(compass);		
 	}
 
-	private void conditionallyAddNode(Set<Integer> detailSet, Set<Integer> topSet, int currentX, int currentY, int transportKey) {
-		Node abc = this.nodes[currentX][currentY];
-		Map<Integer,Transport> transports = abc.getTransportType();
-		boolean hasTransportType = false;
-		for(Transport transport: transports.values()) {
-			if(transport.getCode() == transportKey) {
+	private void addNetwork(Set<Integer> detailSet, Set<Integer> topSet, int x, int y) {			
+		Node currentNode = nodes[x][y];
+		detailSet.add(currentNode.getDetailNetworkKey());
+		topSet.add(currentNode.getTopNetworkKey());	
+	}	
+	
+	private boolean containsTransport(int x, int y, int transportTypeKey) {
+		boolean hasTransportType = false;		
+		for(Transport transport: nodes[x][y].getTransportType().values()) {
+			if(transport.getCode() == transportTypeKey) {
 				hasTransportType = true;
 				break;
 			}
 		}
-		if(hasTransportType) {
-			detailSet.add(abc.getDetailNetworkKey());
-			topSet.add(abc.getTopNetworkKey());
-		}		
+		return hasTransportType;
 	}
 	
 	public void setTransportType(List<Node> nodes, int transportTypeKey) {		
@@ -81,21 +57,28 @@ public class Web {
 		for(Node node:nodes) {
 			int currentX = node.getX();
 			int currentY = node.getY();
-			Node abc = this.nodes[currentX][currentY];
-			detailSet.add(abc.getDetailNetworkKey());
-			topSet.add(abc.getTopNetworkKey());
-			if(currentX<maxX) {
-				conditionallyAddNode(detailSet,topSet,currentX+1,currentY,transportTypeKey);				
+			detailSet.add(node.getDetailNetworkKey());
+			topSet.add(node.getTopNetworkKey());
+			if(currentX<compass.getXBoundary()) {
+				if(containsTransport(currentX+1,currentY,transportTypeKey))	{
+					addNetwork(detailSet,topSet,currentX+1,currentY);
+				}
 			}
 			if(currentX>0) {
-				conditionallyAddNode(detailSet,topSet,currentX-1,currentY,transportTypeKey);	
+				if(containsTransport(currentX-1,currentY,transportTypeKey))	{
+					addNetwork(detailSet,topSet,currentX-1,currentY);	
+				}
 			}
-			if(currentY<maxY) {
-				conditionallyAddNode(detailSet,topSet,currentX,currentY+1,transportTypeKey);	
+			if(currentY<compass.getYBoundary()) {
+				if(containsTransport(currentX,currentY+1,transportTypeKey))	{
+					addNetwork(detailSet,topSet,currentX,currentY+1);
+				}
 			}
 			
 			if(currentY>0) {
-				conditionallyAddNode(detailSet,topSet,currentX,currentY-1,transportTypeKey);	
+				if(containsTransport(currentX,currentY-1,transportTypeKey))	{
+					addNetwork(detailSet,topSet,currentX,currentY-1);
+				}
 			}
 		}
 		//----------------------------		
@@ -122,6 +105,7 @@ public class Web {
 			selection2.add(node);
 		}		
 	}
+
 
 	private void addBasic(List<Node> nodes, int transportTypeKey) {
 		lastAssignedKey++;

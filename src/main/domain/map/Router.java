@@ -74,7 +74,7 @@ public class Router {
 	private Compass compass;
 	
 	/**
-	 * @param compass a compass that gives information about the object that needs to be travelled. Minimal information is required: x bound, y bound, whether a move is possible and the cost of said move. This is all pushed to the compass.
+	 * @param compass a compass that gives information about the object that needs to be traveled. Minimal information is required: x bound, y bound, whether a move is possible and the cost of said move. This is all pushed to the compass.
 	 */
 	
 	public Router(Compass compass) {		
