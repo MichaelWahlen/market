@@ -6,7 +6,6 @@ public interface Compass {
 	public int getXBoundary();
 	public int getYBoundary();
 	public int getHeuristicEstimation(int targetX, int targetY);
-	void setDestination(int destinationX, int destinationY);
-	public void setAllowedNetwork(int networkKey);
-	public void requiresNetwork(boolean requiresNetwork);
+	public void setDestination(int destinationX, int destinationY);	
+	public void setDestination(int destinationX, int destinationY, int designatedNetwork);	
 }

@@ -22,6 +22,7 @@ public class Node {
 	private int Slope = 0;
 	private boolean isFull = false;
 	
+	
 	public List<String> getStatus(){
 		List<String> overviewList = new ArrayList<String>();
 		overviewList.add("Detail network key: "+detailNetworkKey);

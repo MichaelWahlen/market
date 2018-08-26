@@ -13,12 +13,24 @@ public class NodeCompass implements Compass {
 		this.nodes = nodes;
 		this.heuristic = heuristic;
 	}
-	
+
 	@Override
 	public void setDestination(int destinationX, int destinationY) {
-		heuristic.setDestination(destinationX, destinationY);
+		this.requiresNetwork = false;
+		setHeuristicTarget(destinationX,destinationY);
 	}
-
+	
+	@Override
+	public void setDestination(int destinationX, int destinationY, int designatedNetwork) {
+		this.allowedNetwork = designatedNetwork;
+		this.requiresNetwork = true;
+		setHeuristicTarget(destinationX, destinationY);
+	}
+	
+	private void setHeuristicTarget(int destinationX, int destinationY) {
+		heuristic.setDestination(destinationX, destinationY);
+	}	
+	
 	@Override
 	public boolean isMovePossible(int x, int y) {		
 		boolean isEmpty = !nodes[x][y].isFull();
@@ -46,13 +58,5 @@ public class NodeCompass implements Compass {
 		return heuristic.getHeuristicValue(targetX, targetY);
 	}
 
-	@Override
-	public void setAllowedNetwork(int networkKey) {
-		this.allowedNetwork = networkKey;		
-	}
 
-	@Override
-	public void requiresNetwork(boolean requiresNetwork) {		
-		this.requiresNetwork = requiresNetwork;
-	}
 }
