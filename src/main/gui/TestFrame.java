@@ -155,7 +155,7 @@ public class TestFrame extends JFrame implements Listener {
     	        	transportString = transportString + ";"+transport.getCode();
     	        }    	        
     	        g.drawString(transportString, 5+x*50, y*50+23);
-    	        g.drawString(value[y][x].getTopNetworkKey()+","+value[y][x].getDetailNetworkKey(), 5+x*50, y*50+33);	
+    	        g.drawString(""+value[y][x].getTopNetworkKey()/*+","+value[y][x].getDetailNetworkKey()*/, 5+x*50, y*50+33);	
         	}
         }
         g.dispose();

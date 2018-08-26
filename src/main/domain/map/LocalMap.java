@@ -71,22 +71,36 @@ public class LocalMap {
 		returnResult.put("Resource", resourceFactory.getTableRepresentation());
 		returnResult.put("Transport", transportTypeFactory.getTableRepresentation());
 		returnResult.put("Manufacturer", manufacturerFactory.getTableRepresentation());
-		return returnResult;
-		
+		return returnResult;		
 	}
-
+	
+	public boolean tileContainsTransport(int x, int y, int transportTypeKey) {
+		boolean containsTransportType = false;		
+		for(Transport transport: nodes[x][y].getTransportType().values()) {
+			if(transport.getCode() == transportTypeKey) {
+				containsTransportType = true;
+				break;
+			}
+		}
+		return containsTransportType;
+	}
+	
 	public StockPile getStockPile() {		
 		return new StockPile(resourceFactory.getKeys());
 	}
 
-	public void switchTile(int fromX, int fromY, int string) {
-		nodes[fromX][fromY].setAboveGroundResource(resourceFactory.getType(string));		
+	public void switchTile(int fromX, int fromY, int key) {
+		nodes[fromX][fromY].setAboveGroundResource(resourceFactory.getType(key));		
 	}
 
-	public void setSwitch(int x, int y, int switchKey) {
+	public void setSwitch(int x, int y, int key) {
 		if(!nodes[x][y].isFull()) {
-			nodes[x][y].setSwitch(switchFactory.getType(switchKey));
+			nodes[x][y].setSwitch(switchFactory.getType(key));
 		}
+	}
+	
+	public int getNetworkKey(int x, int y) {
+		return nodes[x][y].getTopNetworkKey();
 	}
 	
 }

@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import main.domain.data.Transport;
 import main.domain.map.Compass;
 import main.domain.map.LocalMap;
 import main.domain.map.Manhattan;
@@ -21,12 +19,12 @@ public class Web {
 	private Node[][] nodes;
 	private Router router;
 	private Map<Integer,List<Node>> topLevelNetworks = new HashMap<Integer, List<Node>>();
-	private Map<Integer,List<Node>> detailNetworks = new HashMap<Integer, List<Node>>();	
 	private int lastAssignedKey = 0;
 	private LocalMap map = new LocalMap();
 	private Compass compass;
 	
 	// doesnt work with different types of transport yet. Needs to be fixed. Will currently merge networks without switches purely based on the fact that they are connected. But RR and R should not create a single network.
+	// also doesnt work with single cells being next to a different network
 	
 	public Web(int rows, int columns) {		
 		nodes = map.createNodeMap(rows, columns);
@@ -36,19 +34,11 @@ public class Web {
 
 	private void addNetwork(Set<Integer> detailSet, Set<Integer> topSet, int x, int y) {			
 		Node currentNode = nodes[x][y];
-		detailSet.add(currentNode.getDetailNetworkKey());
 		topSet.add(currentNode.getTopNetworkKey());	
 	}	
 	
 	private boolean containsTransport(int x, int y, int transportTypeKey) {
-		boolean hasTransportType = false;		
-		for(Transport transport: nodes[x][y].getTransportType().values()) {
-			if(transport.getCode() == transportTypeKey) {
-				hasTransportType = true;
-				break;
-			}
-		}
-		return hasTransportType;
+		return map.tileContainsTransport(x,y,transportTypeKey);
 	}
 	
 	public void setTransportType(List<Node> nodes, int transportTypeKey) {		
@@ -57,8 +47,8 @@ public class Web {
 		for(Node node:nodes) {
 			int currentX = node.getX();
 			int currentY = node.getY();
-			detailSet.add(node.getDetailNetworkKey());
-			topSet.add(node.getTopNetworkKey());
+			detailSet.add(map.getNetworkKey(currentX, currentY));
+			topSet.add(map.getNetworkKey(currentX, currentY));
 			if(currentX<compass.getXBoundary()) {
 				if(containsTransport(currentX+1,currentY,transportTypeKey))	{
 					addNetwork(detailSet,topSet,currentX+1,currentY);
@@ -73,35 +63,26 @@ public class Web {
 				if(containsTransport(currentX,currentY+1,transportTypeKey))	{
 					addNetwork(detailSet,topSet,currentX,currentY+1);
 				}
-			}
-			
+			}			
 			if(currentY>0) {
 				if(containsTransport(currentX,currentY-1,transportTypeKey))	{
 					addNetwork(detailSet,topSet,currentX,currentY-1);
 				}
 			}
 		}
-		//----------------------------		
+
 		if(detailSet.size()==1 && detailSet.contains(0)) {
 			addBasic(nodes,transportTypeKey);
 			return;
-		}	
-		
-		
+		}		
 		int pickedNetTopNetWork = getLargestKey(topSet,topLevelNetworks);	
-		int pickedDetailNetWork = getLargestKey(detailSet,detailNetworks);
-		//--------------------------------		
+		
 		setNetwork(pickedNetTopNetWork,topSet,topLevelNetworks,true,nodes);		
-		setNetwork(pickedDetailNetWork,detailSet,detailNetworks,false,nodes);	
-		//--------------------------------
-				
-		List<Node> selection = detailNetworks.get(pickedDetailNetWork);
+		
 		List<Node> selection2 = topLevelNetworks.get(pickedNetTopNetWork);
 		for(Node node: nodes) {		
-			map.setTransportType(node.getX(), node.getY(), transportTypeKey);
-			node.setDetailNetworkKey(pickedDetailNetWork);
-			node.setTopNetworkKey(pickedNetTopNetWork);
-			selection.add(node);
+			map.setTransportType(node.getX(), node.getY(), transportTypeKey);		
+			node.setNetworkKey(pickedNetTopNetWork);			
 			selection2.add(node);
 		}		
 	}
@@ -111,14 +92,13 @@ public class Web {
 		lastAssignedKey++;
 		List<Node> detailNode = new ArrayList<Node>();
 		List<Node> topNode = new ArrayList<Node>();
-		for(Node node: nodes) {
-			node.setDetailNetworkKey(lastAssignedKey);
-			node.setTopNetworkKey(lastAssignedKey);
+		for(Node node: nodes) {			
+			node.setNetworkKey(lastAssignedKey);
 			detailNode.add(node);
 			topNode.add(node);
 			map.setTransportType(node.getX(), node.getY(), transportTypeKey);			
 		}			
-		detailNetworks.put(lastAssignedKey, detailNode);
+		
 		topLevelNetworks.put(lastAssignedKey,topNode);		
 	}
 
@@ -129,10 +109,8 @@ public class Web {
 				List<Node> selection = networks.get(integer);
 				for(Node node:selection) {					
 					if(isTop) {
-						node.setTopNetworkKey(pickedNetwork);
-					} else {
-						node.setDetailNetworkKey(pickedNetwork);
-					}
+						node.setNetworkKey(pickedNetwork);
+					} 
 					selectedNetwork.add(node);								
 				}
 				networks.remove(integer);

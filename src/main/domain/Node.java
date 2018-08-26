@@ -11,7 +11,6 @@ import main.domain.data.Transport;
 
 public class Node {
 	
-	private int detailNetworkKey = 0;
 	private int topNetworkKey = 0;
 	private GenerateableResource aboveGroundResource;
 	private Map<Integer, Transport> containedTransports = new HashMap<Integer, Transport>();
@@ -20,12 +19,10 @@ public class Node {
 	private int y;
 	private Switch localSwitch;
 	private int Slope = 0;
-	private boolean isFull = false;
-	
+	private boolean isFull = false;	
 	
 	public List<String> getStatus(){
 		List<String> overviewList = new ArrayList<String>();
-		overviewList.add("Detail network key: "+detailNetworkKey);
 		overviewList.add("Top network key: "+topNetworkKey);
 		overviewList.add("Above ground resource: "+aboveGroundResource.getName());
 		String transportNames = "";
@@ -47,19 +44,11 @@ public class Node {
 		this.localSwitch = localSwitch;
 	}
 	
-	public int getDetailNetworkKey() {
-		return detailNetworkKey;
-	}
-	
-	public void setDetailNetworkKey(int detailNetworkKey) {
-		this.detailNetworkKey = detailNetworkKey;
-	}
-	
 	public int getTopNetworkKey() {
 		return topNetworkKey;
 	}
 	
-	public void setTopNetworkKey(int topNetworkKey) {
+	public void setNetworkKey(int topNetworkKey) {
 		this.topNetworkKey = topNetworkKey;
 	}
 	
