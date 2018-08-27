@@ -17,7 +17,6 @@ public class Web {
 	
 	private Node[][] nodes;
 	private Router router;
-	//private int lastAssignedKey = 0;
 	private LocalMap map = new LocalMap();
 	private Compass compass;
 	private Network network;
@@ -29,7 +28,7 @@ public class Web {
 		nodes = map.createNodeMap(rows, columns);
 		compass = new NodeCompass(nodes, new Manhattan());
 		router = new Router(compass);	
-		network = new Network(0,map);
+		network = new Network(0);
 	}
 	
 	private int getNetworkKey(int x, int y) {
@@ -46,7 +45,7 @@ public class Web {
 		return map.tileContainsTransport(x,y,transportTypeKey);
 	}
 	
-	private void setTransportType(List<Node> nodes, int transportTypeKey) {		
+	private void determineAdjacentNetworks(List<Node> nodes, int transportTypeKey) {		
 		Set<Integer> topSet = new HashSet<Integer>();
 		for(Node node:nodes) {
 			int currentX = node.getX();
@@ -66,7 +65,10 @@ public class Web {
 			}
 		}
 		if(topSet.size()==1 && topSet.contains(0)) {
-			network.createNewNetwork(nodes, transportTypeKey);
+			List<Node> newNodes = network.createNewNetwork(nodes, transportTypeKey);
+			for(Node node:newNodes) {
+				map.setTransportType(node.getX(), node.getY(), transportTypeKey);	
+			}
 			return;
 		}		
 		int pickedNetTopNetWork = network.getLargestNetwork(topSet);		
@@ -80,7 +82,7 @@ public class Web {
 	}
 
 	public Node[][] getNodes() {		
-		return nodes;
+		return map.getNodes();
 	}
 
 	public StockPile getStockPile() {		
@@ -100,14 +102,14 @@ public class Web {
 	}
 
 	public void buildTransportLine(int fromX, int fromY, int string, int toX, int toY) {
-		if(!nodes[toX][toY].isFull() && !nodes[fromX][fromY].isFull()) {
+		if(!map.isFull(toX, toY) && !map.isFull(fromX, fromY)) {
 			List<Point> points = router.getRoute(fromX,fromY,toX,toY,0);	
 			if(points!=null) {
 				List<Node> nodes  = new ArrayList<Node>();				
 				for(Point point:points) {
 					nodes.add(this.nodes[point.x][point.y]);
 				}
-				setTransportType(nodes, string);
+				determineAdjacentNetworks(nodes, string);
 			}			
 		}		
 	}

@@ -103,4 +103,16 @@ public class LocalMap {
 		return nodes[x][y].getTopNetworkKey();
 	}
 	
+	public void setNetworkKey(int x, int y, int networkKey) {
+		nodes[x][y].setNetworkKey(networkKey);
+	}
+	
+	public boolean isFull(int x, int y) {
+		return nodes[x][y].isFull();
+	}
+
+	public Node[][] getNodes() {		
+		return nodes;
+	}
+	
 }

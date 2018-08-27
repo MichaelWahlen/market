@@ -6,17 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import main.domain.map.LocalMap;
-
 public class Network {
 
 	private Map<Integer,List<Node>> networks = new HashMap<Integer, List<Node>>();
 	private int lastAssignedKey = 0;
-	private LocalMap map;
 	
-	public Network(int defaultNetwork, LocalMap map) {
-		networks.put(defaultNetwork, new ArrayList<Node>());
-		this.map = map;
+	public Network(int defaultNetwork) {
+		networks.put(defaultNetwork, new ArrayList<Node>());		
 	}
 
 	public int getLargestNetwork(Set<Integer> keys) {
@@ -51,15 +47,15 @@ public class Network {
 		return networks.get(pickedNetTopNetWork);
 	}
 
-	public void createNewNetwork(List<Node> nodes, int transportTypeKey) {
+	public List<Node> createNewNetwork(List<Node> nodes, int transportTypeKey) {
 		lastAssignedKey++;
 		List<Node> topNode = new ArrayList<Node>();
 		for(Node node: nodes) {			
 			node.setNetworkKey(lastAssignedKey);			
-			topNode.add(node);
-			map.setTransportType(node.getX(), node.getY(), transportTypeKey);			
+			topNode.add(node);					
 		}		
-		networks.put(lastAssignedKey, topNode);		
+		networks.put(lastAssignedKey, topNode);	
+		return topNode;
 	}
 	
 	
